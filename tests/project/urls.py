@@ -1,0 +1,3 @@
+"""Test project URLs."""
+
+urlpatterns = []
