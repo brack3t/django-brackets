@@ -2,20 +2,22 @@ from __future__ import annotations
 from typing import *
 
 from django.db.models import Model, QuerySet
+from django.http import HttpRequest
 
 from . import A, K
 
 class SelectRelatedMixin:
-    select_related: Union[str, Iterable[str]]
+    select_related: K
     def get_select_related(self) -> list[str]: ...
     def get_queryset(self) -> QuerySet[Model]: ...
 
 class PrefetchRelatedMixin:
-    prefetch_related: Union[str, Iterable[str]]
+    prefetch_related: K
     def get_prefetch_related(self) -> list[str]: ...
     def get_queryset(self) -> QuerySet[Model]: ...
 
 class OrderableListMixin:
+    request: HttpRequest
     orderable_fields: list[str]
     orderable_field_default: str
     orderable_direction_default: str

@@ -2,6 +2,7 @@
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import QuerySet
 
 from tests.project.models import Article
 
@@ -40,6 +41,12 @@ class TestSelectRelated:
             "author": {},
             "coauthor": {},
         }
+
+    def test_select_related_exception(self, single_object_view):
+        """An exception is raised if `select_related` is missing."""
+        view = single_object_view()()
+        with pytest.raises(ImproperlyConfigured):
+            view.get_select_related()
 
 
 @pytest.mark.mixin("PrefetchRelatedMixin")
@@ -80,17 +87,6 @@ class TestPrefetchRelated:
 class TestOrderableList:
     """Tests related to the `OrderableListMixin`."""
 
-    def test_orderable_aliases(self, multiple_object_view):
-        """Mixin's attributes must be backwards-compatible."""
-        view = multiple_object_view()(
-            orderable_columns="name",
-            orderable_columns_default="age",
-            ordering_default="desc",
-        )
-        assert view.get_orderable_fields() == "name"
-        assert view.get_orderable_field_default() == "age"
-        assert view.get_orderable_direction_default() == "desc"
-
     def test_request_ordering(self, multiple_object_view, rf):
         """Querystring arguments should override the mixin's attributes."""
         request = rf.get("/?order_by=foo&order_dir=desc")
@@ -116,3 +112,31 @@ class TestOrderableList:
             request=request,
         )
         assert view.get_queryset().query.order_by == ("-author",)
+
+    @pytest.mark.parametrize("method", [
+        "get_orderable_fields",
+        "get_orderable_field_default",
+        "get_orderable_direction_default",
+    ])
+    def test_orderable_fields_exceptions(self, method, multiple_object_view):
+        """An exception is raised if `orderable_fields` is missing."""
+        view = multiple_object_view()(orderable_direction_default="down")
+        with pytest.raises(ImproperlyConfigured):
+            getattr(view, method)()
+
+    @pytest.mark.django_db
+    def test_basic_queryset_returned(self, user, multiple_object_view, rf):
+        """Test that the correct queryset is returned."""
+        request = rf.get("/?order_by=publish_date&order_dir=desc")
+        Article.objects.create(title="Ayy", author=user(username="One"))
+        Article.objects.create(title="Bee", author=user(username="Two"))
+        view = multiple_object_view()(
+            orderable_fields=["author"],
+            orderable_fields_default="author",
+            orderable_direction_default="asc",
+            request=request
+        )
+        vq = view.get_queryset().values_list(flat=True)
+        dq = Article.objects.order_by("-author").values_list(flat=True)
+        # Since QuerySets are lazy, we need to force them to evaluate.
+        assert list(vq) != list(dq)

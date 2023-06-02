@@ -21,7 +21,7 @@ class Article(models.Model):
         app_label = "project"
 
     def __str__(self):
-        return f"_{self.title}_ by {self.author__name}."
+        return f"_{self.title}_ by {self.author}."
 
 
 class CanonicalArticle(models.Model):
@@ -44,4 +44,4 @@ class CanonicalArticle(models.Model):
         return f"unauthored-{self.slug}"
 
     def __str__(self):
-        return f"_{self.title}_ by {self.author__name}."
+        return f"_{self.title}_ by {self.author}."

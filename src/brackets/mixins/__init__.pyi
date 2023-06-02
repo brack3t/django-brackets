@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Protocol, Any, Type
+from typing import Protocol, Any, Self, Type
 from .access import *
 from .forms import *
 from .http import *
@@ -10,12 +10,18 @@ from .queries import *
 from .redirects import *
 from .rest_framework import *
 
+from django.db.models import Model, QuerySet
 from django.http import HttpRequest, HttpResponse
 
-A = Type[tuple[Any]]
-K = Type[dict[str, Any]]
+A = Type[tuple[Any]]  # *args
+K = Type[dict[str, Any]]  # **kwargs
 DOL = Type[str | dict[str, list[Any]]]  # String or Dict o' lists
 RaiseOrCall = Type[bool | Exception | Callable[[], Callable[[], bool]]]
+
+class CanQuery(Protocol):
+    """The concept of a view that can query."""
+    queryset: QuerySet[Model]
+    def get_queryset(self: Self) -> QuerySet[Model]: ...
 
 class CanDispatch(Protocol):
     """The concept of a view that can dispatch requests."""
@@ -50,3 +56,8 @@ class HasHttpMethods(Protocol):
     def post(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse: ...
     def put(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse: ...
     def trace(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse: ...
+
+class _BaseView(CanDispatch, HasContext, HasRequest, HasContent, HasHttpMethods, Protocol):
+    """The concept of a view."""
+
+    def __init__(self, *args: A, **kwargs: K) -> None: ...

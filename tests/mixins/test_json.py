@@ -1,3 +1,4 @@
+"""Tests for JSON-related mixins."""
 from unittest import mock
 
 import pytest
@@ -6,6 +7,7 @@ from django.views.generic import TemplateView, View
 
 @pytest.fixture()
 def json_response_view(mixin_view):
+    """Generate a view with the `JSONResponseMixin`."""
     def view(**kwargs):
         kwargs.update({"content_type": "application/yaml"})
         json_view = type("JSONResponseView", (mixin_view(), View), kwargs)
@@ -17,6 +19,7 @@ def json_response_view(mixin_view):
 
 @pytest.fixture()
 def json_request_view(mixin_view):
+    """Generate a view with the `JSONRequestMixin`."""
     def mock_json_get(self, request):
         return b'{"foo": "bar"}'
 

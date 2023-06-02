@@ -1,15 +1,15 @@
-"""Mixins related to Django ORM queries."""
+"r""Mixins related to Django ORM queries."""
 
 from __future__ import annotations
 
-import typing
+from typing import TYPE_CHECKING
 
 from django.core.exceptions import ImproperlyConfigured
 
-if typing.TYPE_CHECKING:
-    from typing import Iterable, Union
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Iterable
 
-    from django.db.models import QuerySet
+    from django.db.models import Model, QuerySet
 
 __all__ = ["SelectRelatedMixin", "PrefetchRelatedMixin", "OrderableListMixin"]
 
@@ -17,7 +17,7 @@ __all__ = ["SelectRelatedMixin", "PrefetchRelatedMixin", "OrderableListMixin"]
 class SelectRelatedMixin:
     """A mixin for adding select_related to the queryset."""
 
-    select_related: Union[str, Iterable[str]] = None
+    select_related = None
 
     def get_select_related(self) -> list[str]:
         """Get the fields to be select_related."""
@@ -36,9 +36,9 @@ class SelectRelatedMixin:
 
         return self.select_related
 
-    def get_queryset(self) -> QuerySet:
+    def get_queryset(self) -> QuerySet[Model]:
         """Add select_related to the queryset."""
-        queryset = super().get_queryset()
+        queryset: QuerySet[Model] = super().get_queryset()
         select_related = self.get_select_related()
         return queryset.select_related(*select_related)
 
@@ -46,7 +46,7 @@ class SelectRelatedMixin:
 class PrefetchRelatedMixin:
     """A mixin for adding prefetch_related to the queryset."""
 
-    prefetch_related: Union[str, Iterable[str]] = None
+    prefetch_related = None
 
     def get_prefetch_related(self) -> list[str]:
         """Get the fields to be prefetch_related."""
@@ -66,7 +66,7 @@ class PrefetchRelatedMixin:
 
     def get_queryset(self) -> QuerySet:
         """Add prefetch_related to the queryset."""
-        queryset = super().get_queryset()
+        queryset: QuerySet[Model] = super().get_queryset()
         prefetch_related = self.get_prefetch_related()
         return queryset.prefetch_related(*prefetch_related)
 
@@ -74,20 +74,9 @@ class PrefetchRelatedMixin:
 class OrderableListMixin:
     """A mixin for adding query-string based ordering to the queryset."""
 
-    orderable_fields: list[str] = None
-    orderable_field_default: str = None
-    orderable_direction_default: str = "asc"
-
-    def __init__(self, *args, **kwargs) -> None:
-        """Set up the mixin's attributes."""
-        super().__init__(*args, **kwargs)
-
-        if getattr(self, "orderable_columns", None) is not None:
-            self.orderable_fields = self.orderable_columns
-        if getattr(self, "orderable_columns_default", None) is not None:
-            self.orderable_field_default = self.orderable_columns_default
-        if getattr(self, "ordering_default", None) is not None:
-            self.orderable_direction_default = self.ordering_default
+    orderable_fields = None
+    orderable_field_default = None
+    orderable_direction_default = "asc"
 
     def get_orderable_fields(self) -> list[str]:
         """Get fields to use for ordering."""
@@ -136,7 +125,7 @@ class OrderableListMixin:
 
     def get_queryset(self) -> QuerySet:
         """Order the queryset."""
-        queryset = super().get_queryset()
+        queryset: QuerySet[Model] = super().get_queryset()
 
         field, direction = self.get_order_from_request()
         allowed_fields = self.get_orderable_fields()

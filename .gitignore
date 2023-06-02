@@ -18,3 +18,4 @@ pytest-coverage.txt
 .coverage.xml
 coverage.xml
 .vscode/
+lcov.*

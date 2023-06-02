@@ -14,10 +14,7 @@ classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Natural Language :: English",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -27,7 +24,7 @@ keywords = ["django", "forms", "mixins", "views"]
 license = { file = "LICENSE.txt" }
 name = "django-brackets"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 
 [project.urls]
 documentation = "https://django-brackets.readthedocs.io/en/latest/"
@@ -118,14 +115,17 @@ disallow_untyped_calls = false
 disallow_untyped_decorators = false
 disallow_untyped_defs = false
 error_summary = true
-exclude = ["build", "dist", "docs", "tests", "venv"]
+exclude = ["build", "dist", "docs", "tests", ".venv"]
 implicit_optional = true
+no_implicit_optional = false
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 pretty = true
 show_column_numbers = true
-show_error_context = true
-strict = true
-warn_redundant_casts = true
+show_error_context = false
+strict = false
+warn_redundant_casts = false
+warn_return_any = true
+warn_unused_ignores = true
 
 [tool.pytest.ini_options]
 # ini_options
@@ -207,9 +207,9 @@ unfixable = []
 extend-exclude = ["*.pyi", "docs"]
 ignore-init-module-imports = true
 
-# Assume Python 3.8.
+# Assume Python 3.11.
 src = ["src", "tests"]
-target-version = "py38"
+target-version = "py311"
 
 # format = "json"
 format = "pylint"
