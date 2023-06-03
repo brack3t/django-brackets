@@ -11,6 +11,9 @@ class TestUserFormMixin:
     class InvalidForm(mixins.UserFormMixin):
         """A non-form form."""
 
+    class DoesNothing:
+        """A non-form."""
+
     class ValidForm(mixins.UserFormMixin, forms.Form):
         """A form form."""
 
@@ -19,7 +22,14 @@ class TestUserFormMixin:
         with pytest.raises(TypeError):
             self.InvalidForm()
 
-    def test_form_has_user(self, admin_user):
+    @pytest.mark.parametrize(("form_class", "user"), [(ValidForm, True), (ValidForm, False)])
+    def test_form_has_user(self, form_class, user, admin_user):
         """Valid forms contain the user."""
-        form = self.ValidForm(user=admin_user)
-        assert form.user == admin_user
+        form_kwargs = {"user": admin_user} if user else {}
+        form = form_class(**form_kwargs)
+        try:
+            assert form.user == admin_user
+        except AttributeError:
+            assert not user
+        else:
+            assert user
