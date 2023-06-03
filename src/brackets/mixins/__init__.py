@@ -1,4 +1,5 @@
 from .access import *  # noqa: F401, F403
+from .form_views import *  # noqa: F401, F403
 from .forms import *  # noqa: F401, F403
 from .http import *  # noqa: F401, F403
 from .json import *  # noqa: F401, F403
