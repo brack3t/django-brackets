@@ -27,6 +27,18 @@ class TestFormWithUserMixin:
         view.form_class = form_class()
         assert issubclass(view(request=request).get_form_class(), mixins.UserFormMixin)
 
+    def test_mro_preserved(self, form_view, form_class, admin_user, rf):
+        """A form that already has `UserFormMixin` is not wrapped."""
+        class Flag:
+            """A flag to indicate that the classes are preserved."""
+
+        request = rf.get("/")
+        request.user = admin_user
+        view = form_view()
+        view.form_class = form_class()
+        view.form_class.__bases__ = (Flag, mixins.UserFormMixin, forms.Form)
+        assert issubclass(view(request=request).get_form_class(), Flag)
+
 
 @pytest.mark.parametrize(
     ("form", "view"),

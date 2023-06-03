@@ -35,7 +35,7 @@ class FormWithUserMixin:
 
     def get_form_class(self) -> type[forms.Form]:
         """Get the form class or wrap it with UserFormMixin."""
-        form_class = super().get_form_class()
+        form_class: type[forms.Form] = super().get_form_class()
         if issubclass(form_class, UserFormMixin):
             return form_class
 

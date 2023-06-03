@@ -6,10 +6,21 @@ from django.http import HttpRequest, HttpResponse
 
 from typing import *
 
-from . import HasContext, A, K, HasHttpMethods
+from tests.conftest import form_class
+
+from . import CanDispatch, HasContext, A, K, HasHttpMethods, HasRequest
 
 
-class FormWithUserMixin:
+class HasForm(Protocol):
+    form_class: type[forms.Form]
+    form_kwargs: K
+    def get_form_class(self) -> type[forms.Form]: ...
+    def get_form_kwargs(self) -> dict[Any, Any]: ...
+
+class FormWithUserMixin(HasRequest, HasForm, CanDispatch):
+    form_class; Type[forms.Form]
+    form_kwargs: K
+    request: HttpRequest
     def get_form_kwargs(self) -> dict[Any, Any]: ...
     def get_form_class(self) -> Type[forms.Form]: ...
 

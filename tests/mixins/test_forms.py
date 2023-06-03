@@ -30,6 +30,8 @@ class TestUserFormMixin:
         try:
             assert form.user == admin_user
         except AttributeError:
+            # The form does not have a user
             assert not user
         else:
+            # The form has a user
             assert user
