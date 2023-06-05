@@ -12,8 +12,8 @@ from .rest_framework import *
 from django.db.models import Model, QuerySet
 from django.http import HttpRequest, HttpResponse
 
-A = Type[tuple[Any]]  # *args
-K = Type[dict[str, Any]]  # **kwargs
+A = tuple  # *args
+K = dict  # **kwargs
 DOL = Type[str | dict[str, list[Any]]]  # String or Dict o' lists
 RaiseOrCall = Type[bool | Exception | Callable[[], Callable[[], bool]]]
 

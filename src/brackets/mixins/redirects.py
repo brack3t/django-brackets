@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import inspect
 from typing import TYPE_CHECKING
 
 from django import http
@@ -15,7 +14,6 @@ if TYPE_CHECKING:
 
 __all__ = [
     "RedirectMixin",
-    "CanonicalRedirectMixin",
     "RedirectToLoginMixin",
 ]
 
@@ -41,36 +39,6 @@ class RedirectMixin:
             )
             raise ImproperlyConfigured(_err_msg)
         return self.redirect_url
-
-
-class CanonicalRedirectMixin(RedirectMixin):
-    """Redirect to the canonical URL for an object."""
-
-    canonical_redirect: bool = False
-
-    def __init__(self, *args, **kwargs) -> None:
-        """Set `self.redirect_url` if needed."""
-        super().__init__(*args, **kwargs)
-        if self.canonical_redirect:
-            self.redirect_url = self.get_canonical_url()
-
-    def get_canonical_url(self) -> str:
-        """Generate the canonical URL for the page.
-
-        How could we possibly know what the canonical URL is?
-        Your models, routes, and views are unique, so you'll
-        have to implement this yourself.
-        """
-        raise NotImplementedError
-
-    def dispatch(self, request: http.HttpRequest, *args, **kwargs) -> http.HttpResponse:
-        """Check the slug and redirect if necessary."""
-        if all([
-            request.get_full_path() != self.get_redirect_url(),
-            self.canonical_redirect,
-        ]):
-            return self.redirect()
-        return super().dispatch(request, *args, **kwargs)
 
 
 class RedirectToLoginMixin(RedirectMixin):
