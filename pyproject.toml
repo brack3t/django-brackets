@@ -14,6 +14,7 @@ classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Natural Language :: English",
   "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python",
   "Topic :: Software Development :: Libraries :: Python Modules",
@@ -24,7 +25,7 @@ keywords = ["django", "forms", "mixins", "views"]
 license = { file = "LICENSE.txt" }
 name = "django-brackets"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 
 [project.urls]
 documentation = "https://django-brackets.readthedocs.io/en/latest/"
@@ -39,7 +40,7 @@ checks = [
   "mypy",
   "ruff",
 ]
-development = ["django", "django-rest-framework"]
+development = ["django>=3.2,<6", "django-rest-framework"]
 documentation = ["releases", "semantic-version", "sphinx"]
 testing = [
   "coverage",
@@ -106,7 +107,6 @@ color = true
 omit-covered-files = true
 quiet = false
 verbose = 1
-
 
 [tool.mypy]
 check_untyped_defs = false

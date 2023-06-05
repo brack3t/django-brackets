@@ -15,24 +15,23 @@ from django.views.generic.list import MultipleObjectMixin
 from .project.models import Article
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Type
+    from typing import Callable, Type
 
-    from django.db.models import Model
+    from django.db import models
 
-    K = Type[dict[Any, Any]]
+    K = dict
 
 
 @pytest.mark.django_db()
 @pytest.fixture()
-def user(django_user_model: Model) -> Callable:
+def user(django_user_model) -> Callable:
     """Provide a generic user fixture for tests."""
 
-    def _user(**kwargs: K) -> Type[Model]:
+    def _user(**kwargs: K) -> models.Model:
         """Generate a customizable user."""
-        defaults = {"username": "test", "password": "Test1234"}
+        defaults: K = {"username": "test", "password": "Test1234"}
         defaults.update(kwargs)
-        user = django_user_model(**defaults)
-        user.save()
+        user: models.Model = django_user_model.objects.create(**defaults)
         return user
 
     return _user
@@ -48,13 +47,12 @@ def mixin_view_factory(request: pytest.FixtureRequest) -> Callable:
     mixin_name = mixin_request.args[0]
     mixin_class = getattr(mixins, mixin_name)
 
-    def mixin_view(**kwargs: K) -> Type[View]:
+    def mixin_view(**kwargs: dict) -> Type[View]:
         """Mixed-in view generator."""
-        kwargs.update(
-            {
-                "get": lambda s, r: HttpResponse("django-brackets"),
-            }
-        )
+        default_functions: dict = {
+            "get": lambda s, r: HttpResponse("django-brackets")
+        }
+        kwargs.update(**default_functions)
         _name = f"{mixin_class.__name__}FixtureView"
         return type(_name, (mixin_class, View), kwargs)
 
