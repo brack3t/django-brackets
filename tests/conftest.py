@@ -102,7 +102,7 @@ def form_view(mixin_view: Callable) -> Callable:
             (mixin_view(), BaseFormView),
             {
                 "http_method_names": ["get", "post"],
-                "post": lambda s, r, *a, **k: HttpResponse("post"),
+                # "post": lambda s, r, *a, **k: HttpResponse("post"),
             },
             **kwargs,
         )

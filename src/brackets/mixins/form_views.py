@@ -61,8 +61,8 @@ class MultipleFormsMixin:
     """Provides a view with the ability to handle multiple Forms."""
 
     form_classes: dict[str, forms.Form] = None
-    initials: dict[str, dict] = {}
-    instances: dict[str, models.Model] = None
+    form_initial_values: dict[str, dict] = {}
+    form_instances: dict[str, models.Model] = None
 
     def __init__(self, *args, **kwargs) -> None:
         """Alias get_forms to get_form for backwards compatibility."""
@@ -77,8 +77,8 @@ class MultipleFormsMixin:
 
     def get_form_classes(self) -> list:
         """Get the form classes to use in this view."""
+        _class = self.__class__.__name__
         if self.form_classes is None:
-            _class = self.__class__.__name__
             _err_msg = (
                 f"{_class} is missing a form_classes attribute. "
                 f"Define `{_class}.form_classes`, or override "
@@ -101,21 +101,21 @@ class MultipleFormsMixin:
 
     def get_instance(self, name: str) -> Optional[models.Model]:
         """Connect instances to forms."""
-        if self.instances is None:
-            _class = self.__class__.__name__
+        _class = self.__class__.__name__
+        if self.form_instances is None:
             _err_msg = (
-                f"{_class} is missing an instances attribute."
-                f"Define `{_class}.instances`, or override "
+                f"{_class} is missing a `form_instances` attribute."
+                f"Define `{_class}.form_instances`, or override "
                 f"`{_class}.get_instances`."
             )
             raise ImproperlyConfigured(_err_msg)
 
-        if not isinstance(self.instances, dict):
-            _err_msg = f"`{_class}.instances` must be a dictionary."
+        if not isinstance(self.form_instances, dict):
+            _err_msg = f"`{_class}.form_instances` must be a dictionary."
             raise ImproperlyConfigured(_err_msg)
 
         try:
-            instance = self.instances[name]
+            instance = self.form_instances[name]
         except (KeyError, ValueError) as exc:
             _err_msg = f"`{name}` is not an available instance."
             raise ImproperlyConfigured(_err_msg) from exc
@@ -125,20 +125,20 @@ class MultipleFormsMixin:
     def get_initial(self, name: str) -> Optional[dict[str, Any]]:
         """Connect instances to forms."""
         _class = self.__class__.__name__
-        if self.initials is None:
+        if self.form_initial_values is None:
             _err_msg = (
-                f"{_class} is missing an initials attribute."
-                f"Define `{_class}.initials`, or override "
+                f"{_class} is missing a `form_initial_values` attribute."
+                f"Define `{_class}.form_initial_values`, or override "
                 f"`{_class}.get_initial`."
             )
             raise ImproperlyConfigured(_err_msg)
 
-        if not isinstance(self.initials, dict):
-            _err_msg = f"`{_class}.initials` must be a dictionary."
+        if not isinstance(self.form_initial_values, dict):
+            _err_msg = f"`{_class}.form_initial_values` must be a dictionary."
             raise ImproperlyConfigured(_err_msg)
 
         try:
-            initial = self.initials[name]
+            initial = self.form_initial_values[name]
         except KeyError:
             return {}
         else:
@@ -152,7 +152,8 @@ class MultipleFormsMixin:
 
         kwargs["initial"] = self.get_initial(name)  # use the form's initial data
 
-        if isinstance(self, forms.ModelForm):
+        form_class = self.get_form_classes()[name].__class__
+        if issubclass(form_class, forms.ModelForm):
             kwargs["instance"] = self.get_instance(name)  # use the form's instance
 
         if self.request.method in {"POST", "PUT", "PATCH"}:
