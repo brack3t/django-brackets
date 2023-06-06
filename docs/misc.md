@@ -1,0 +1,3 @@
+# Miscellaneous mixins
+
+## StaticContextMixin
