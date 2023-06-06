@@ -6,8 +6,6 @@ from django.http import HttpRequest, HttpResponse
 
 from typing import *
 
-from tests.conftest import form_class
-
 from . import CanDispatch, HasContext, A, K, HasHttpMethods, HasRequest
 
 
@@ -37,7 +35,7 @@ CsrfExemptMixin = CSRFExemptMixin
 class MultipleFormsMixin(HasContext, HasHttpMethods):
     context: K
     form_classes: dict[str, forms.Form]
-    form_initial_values: dict[str, dict]
+    form_initial_values: dict[str, dict[Any, Any]]
     form_instances: dict[str, models.Model]
     get_form: type[forms.Form]
     def __init__(self, *args: A, **kwargs: K) -> None: ...
