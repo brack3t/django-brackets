@@ -6,7 +6,7 @@ These mixins are aimed at making it easier to control access to your view.
 
 ## PassesTestMixin
 
-The `PassesTestMixin` is the basis for most of the mixins in this module. It requires you to provide a method and that method's name. The view will run that method before anything happens in `dispatch`. If the test method returns `False` or an equivalent, the view's `dispatch` method will be skipped and the `handle_test_failure` method will be called. Override `handle_test_failure` to control what happens when the request doesn't pass your test.
+The `PassesTestMixin` is the base for most of the mixins in this module. It requires you to provide a method and that method's name. The view will run that method before anything happens in `dispatch`. If the test method returns `False` or an equivalent, the view's `dispatch` method will be skipped and the `handle_test_failure` method will be called. Override `handle_test_failure` to control what happens when the request doesn't pass your test.
 
 ```python
 from brackets.mixins import PassesTestMixin
@@ -30,6 +30,8 @@ The `PassOrRedirectMixin` combines two powerful mixins: `PassesTestMixin` and th
 If the view's test doesn't pass, by default the request will be redirected to whatever URL you provide in the `redirect_url` attribute. If you'd like to control how the redirection is accomplished, override `redirect`. If you'd like to customize how the redirect URL is discovered, you'll want to override `get_redirect_url`.
 
 ```py
+from brackets.mixins import PassOrRedirectMixin
+
 class InOrOutView(PassOrRedirectMixin, View):
     redirect_url = "/login/"
     redirect_unauthenticated_users = True
@@ -50,6 +52,8 @@ Much like `SuperuserRequiredMixin`, the `StaffUserRequiredMixin` requires the vi
 The `GroupRequiredMixin` is a little different from `SuperuserRequired` and `StaffUserRequired`. It will take a single group name or a list of group names, and then ensure that the requesting user is in at least one of them.
 
 ```py
+from brackets.mixins import GroupRequiredMixin
+
 class PrivateGroupView(GroupRequiredMixin, ListView):
     group_required = "private_group"
 ```
@@ -75,6 +79,8 @@ The `PermissionRequiredMixin` is probably the most complex of the access-related
 The `permission_required` attribute is where most of the work is done. It's expected to be a dictionary with two keys: `"all"` and `"any"`. The `"all"` key indicates permissions which the user _must_ have, and they must have _all_ of them. The `"any"` list of permissions, though, will allow a user through if they have any of the listed permissions.
 
 ```py
+from brackets.mixins import PermissionRequiredMixin
+
 class EditAccountView(PermissionRequiredMixin, UpdateView):
     permission_required = {
         "all": ["account.can_edit"],
