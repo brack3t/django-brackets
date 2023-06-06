@@ -4,23 +4,21 @@ from django import forms
 
 from brackets import mixins
 
+class ValidForm(mixins.UserFormMixin, forms.Form):
+    """Valid forms extend both classes."""
+
 
 class TestUserFormMixin:
     """Tests for the UserFormMixin."""
 
-    class InvalidForm(mixins.UserFormMixin):
-        """A non-form form."""
-
-    class DoesNothing:
-        """A non-form."""
-
-    class ValidForm(mixins.UserFormMixin, forms.Form):
-        """A form form."""
-
     def test_invalid_class(self):
         """Invalid forms raise an exception."""
+        class _Form(mixins.UserFormMixin):
+            """Testing purposes only"""
+
         with pytest.raises(TypeError):
-            self.InvalidForm()
+            _Form()
+
 
     @pytest.mark.parametrize(("form_class", "user"), [(ValidForm, True), (ValidForm, False)])
     def test_form_has_user(self, form_class, user, admin_user):

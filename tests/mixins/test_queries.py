@@ -2,7 +2,6 @@
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import QuerySet
 
 from tests.project.models import Article
 

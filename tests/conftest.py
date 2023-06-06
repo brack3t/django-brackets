@@ -59,8 +59,8 @@ def mixin_view_factory(request: pytest.FixtureRequest) -> Callable:
     return mixin_view
 
 
-@pytest.fixture()
-def single_object_view(mixin_view: Callable) -> Callable:
+@pytest.fixture(name="single_object_view")
+def single_object_view_factory(mixin_view: Callable) -> Callable:
     """Fixture for a view with the `SingleObjectMixin`."""
 
     def _view(**kwargs: K) -> Type[SingleObjectMixin]:
@@ -75,8 +75,8 @@ def single_object_view(mixin_view: Callable) -> Callable:
     return _view
 
 
-@pytest.fixture()
-def multiple_object_view(mixin_view: Callable) -> Callable:
+@pytest.fixture(name="multiple_object_view")
+def multiple_object_view_factory(mixin_view: Callable) -> Callable:
     """Fixture for a view with the `MultipleObjectMixin`."""
 
     def _view(**kwargs: K) -> Type[MultipleObjectMixin]:
@@ -91,8 +91,8 @@ def multiple_object_view(mixin_view: Callable) -> Callable:
     return _view
 
 
-@pytest.fixture()
-def form_view(mixin_view: Callable) -> Callable:
+@pytest.fixture(name="form_view")
+def form_view_factory(mixin_view: Callable) -> Callable:
     """Fixture for a view with the `FormMixin`."""
 
     def _view(**kwargs: K) -> Type[BaseFormView]:
@@ -110,8 +110,8 @@ def form_view(mixin_view: Callable) -> Callable:
     return _view
 
 
-@pytest.fixture()
-def model_form_view(mixin_view: Callable) -> Callable:
+@pytest.fixture(name="model_form_view")
+def model_form_view_factory(mixin_view: Callable) -> Callable:
     """Fixture for a view with the `ModelFormMixin`."""
 
     def _view(**kwargs: K) -> Type[ModelFormMixin]:
@@ -131,8 +131,8 @@ def model_form_view(mixin_view: Callable) -> Callable:
     return _view
 
 
-@pytest.fixture()
-def form_class() -> Callable:
+@pytest.fixture(name="form_class")
+def form_class_factory() -> Callable:
     """Generate a new form class with given kwargs."""
 
     def _form(**kwargs: K) -> Type[forms.Form]:
@@ -149,8 +149,8 @@ def form_class() -> Callable:
     return _form
 
 
-@pytest.fixture()
-def model_form_class() -> Callable:
+@pytest.fixture(name="model_form_class")
+def model_form_class_factory() -> Callable:
     """Generate a new model form class with given kwargs."""
 
     def _form(**kwargs: K) -> Type[forms.ModelForm]:
