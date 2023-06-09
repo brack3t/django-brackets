@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ["django<=3.2,<6", "flit"]
+dependencies = ["django-rest-framework", "django<=3.2,<6", "flit"]
 dynamic = ["description", "version"]
 keywords = ["django", "forms", "mixins", "views"]
 license = { file = "LICENSE.txt" }
