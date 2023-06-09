@@ -27,6 +27,10 @@ name = "django-brackets"
 readme = "README.md"
 requires-python = ">=3.10"
 
+[project.scripts]
+all_tests = "brackets:all"
+no_coverage = "brackets:no-cover"
+
 [project.urls]
 documentation = "https://django-brackets.readthedocs.io/en/latest/"
 repository = "https://github.com/brack3t/django-brackets"
@@ -48,7 +52,7 @@ testing = [
   "pytest-cov",
   "pytest-django",
   "pytest-lazy-fixture",
-  "pytest-reverse",
+  "pytest-random-order",
 ]
 
 # Tool configuration
@@ -134,13 +138,14 @@ pythonVerion = "3.11"
 reportMissingImports = true
 reportMissingTypeStubs = false
 
+
 [tool.pytest.ini_options]
 # ini_options
 DJANGO_SETTINGS_MODULE = "tests.project.settings"
-addopts = "--cov --no-cov-on-fail --cov-report term-missing --cov-report xml --nomigrations --reverse -c pyproject.toml"
+addopts = "-c pyproject.toml"
 django_find_project = false
 markers = ["mixin", "mixin_view_factory"]
-norecursedirs = [".git", "__pycache__", "docs"]
+norecursedirs = [".devcontainer", ".git", ".mypy_cache", "__pycache__", "docs"]
 pythonpath = [".", "src", "tests.project"]
 testpaths = ["tests"]
 
@@ -211,7 +216,7 @@ fixable = [
 
 unfixable = []
 
-extend-exclude = ["*.pyi", "docs"]
+extend-exclude = ["docs"]
 ignore-init-module-imports = true
 
 # Assume Python 3.11.
@@ -222,6 +227,11 @@ target-version = "py311"
 format = "pylint"
 
 [tool.ruff.per-file-ignores]
+"src/brackets/*.pyi" = [
+  "D100", # Missing docstring in public module
+  "D101", # Missing docstring in public class
+  "D102", # Missing docstring in public method
+]
 "tests/mixins/test_*.py" = [
   "ANN001", # Missing type annotation for function argument
   "ANN002", # Missing type annotation for *args
@@ -251,16 +261,13 @@ current = "2023"
 # Make sure this matches current_version before
 # using tbump
 regex = '''
-  (?P<major>\d+)
-  \.
-  (?P<minor>\d+)
-  \.
-  (?P<patch>\d+)
+  (?P<year>\d{4})
+  (?:\.)(?P<month>\d{2})?
   '''
 
 [tool.tbump.git]
 message_template = "Bump to {new_version}"
-tag_template = "v{new_version}"
+tag_template = "{new_version}"
 
 # For each file to patch, add a [[tool.tbump.file]] config
 # section containing the path of the file, relative to the
@@ -269,5 +276,5 @@ tag_template = "v{new_version}"
 src = "brackets/__init__.py"
 
 [[tool.tbump.before_commit]]
-cmd = "grep -q {new_version} docs/changelog.rst"
+cmd = "grep -q {new_version} docs/changelog.md"
 name = "check changelog"
