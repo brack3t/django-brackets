@@ -8,7 +8,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - run: pip install pytest pytest-django pytest-lazy-fixture
+      - run: pip install django pytest pytest-django pytest-lazy-fixture
       - name: Run pytest
         env:
           PYTHONPATH: tests/project/:src/
