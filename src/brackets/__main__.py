@@ -35,15 +35,22 @@ def no_coverage() -> int:
     return [str(flag) for flag in chain(flags.values())]
 
 
+def standard() -> int:
+    """Run with only the basic flags."""
+    return [str(flag) for flag in flag_groups["standard"]]
+
+
 if __name__ == "__main__":
     arg: str = ""
     with contextlib.suppress(IndexError):
         arg: str = sys.argv[1]
 
     match arg:
+        case "all":
+            test = all_tests
         case "no-cover":
             test = no_coverage
         case _:
-            test = all_tests
+            test = standard
 
     sys.exit(pytest.main(test()))
