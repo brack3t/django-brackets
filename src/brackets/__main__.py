@@ -1,7 +1,7 @@
 """Commands for django-bracket developers."""
 import contextlib
-from itertools import chain
 import sys
+from itertools import chain
 
 import pytest
 
