@@ -1,7 +1,13 @@
 from __future__ import annotations
 from typing import *
 
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, StreamingHttpResponse, HttpResponseBadRequest
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect,
+    StreamingHttpResponse,
+    HttpResponseBadRequest,
+)
 
 from brackets.mixins.redirects import RedirectMixin
 from . import A, CanDispatch, DOL, HasRequest, K
@@ -14,7 +20,9 @@ class PassesTestMixin(CanDispatch, HasRequest):
     def handle_test_failure(self) -> HttpResponse: ...
 
 class PassOrRedirectMixin(PassesTestMixin, RedirectMixin):
-    raise_exception: bool | Exception | Callable[[HttpRequest], HttpResponse | StreamingHttpResponse]
+    raise_exception: bool | Exception | Callable[
+        [HttpRequest], HttpResponse | StreamingHttpResponse
+    ]
     redirect_unauthenticated_users: bool
     redirect_url: str
     request: HttpRequest
@@ -22,10 +30,12 @@ class PassOrRedirectMixin(PassesTestMixin, RedirectMixin):
 
 class SuperuserRequiredMixin(PassesTestMixin):
     dispatch_test: str
+    request: HttpRequest
     def test_superuser(self) -> bool: ...
 
 class StaffUserRequiredMixin(PassesTestMixin):
     dispatch_test: str
+    request: HttpRequest
     def test_staffuser(self) -> bool: ...
 
 class GroupRequiredMixin(PassesTestMixin):

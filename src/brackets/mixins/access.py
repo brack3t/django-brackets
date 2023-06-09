@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import inspect
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
@@ -17,7 +16,7 @@ from brackets.mixins.redirects import RedirectMixin
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Callable
 
-    from . import A, K, RaiseOrCall
+    from . import A, K, Optional, RaiseOrCall
 
 __all__ = [
     "PassesTestMixin",
@@ -40,13 +39,10 @@ class PassesTestMixin:
     another method is called to handle whatever comes next.
     """
 
-    dispatch_test = None
+    dispatch_test: Optional[str] = None
 
     def dispatch(
-        self,
-        request: http.HttpRequest,
-        *args: A,
-        **kwargs: K
+        self, request: http.HttpRequest, *args: A, **kwargs: K
     ) -> http.HttpResponse:
         """Run the test method and dispatch the view if it passes."""
         test_method = self.get_test_method()
@@ -97,9 +93,9 @@ class PassOrRedirectMixin(PassesTestMixin, RedirectMixin):
     def handle_test_failure(self) -> http.HttpResponse:
         """Redirect a failed test."""
         # redirect unauthenticated users to login
-        if ((not self.request.user or not self.request.user.is_authenticated)
-            and self.redirect_unauthenticated_users
-        ):
+        if (
+            not self.request.user or not self.request.user.is_authenticated
+        ) and self.redirect_unauthenticated_users:
             return self.redirect()
 
         return super().handle_test_failure()
@@ -132,7 +128,7 @@ class StaffUserRequiredMixin(PassesTestMixin):
 class GroupRequiredMixin(PassesTestMixin):
     """Requires an authenticated user who is also a group member."""
 
-    group_required: Union[str, list[str]] = None
+    group_required: str | list[str] = None
     dispatch_test: str = "check_groups"
 
     def get_group_required(self) -> list[str]:
@@ -211,10 +207,10 @@ class RecentLoginRequiredMixin(PassesTestMixin):
 class PermissionRequiredMixin(PassesTestMixin):
     """Require a user to have specific permission(s)."""
 
-    permission_required: Union[str, dict[str, list[str]]] = None
+    permission_required: str | dict[str, list[str]] = None
     dispatch_test: str = "check_permissions"
 
-    def get_permission_required(self) -> Union[str, dict[str, list[str]]]:
+    def get_permission_required(self) -> str | dict[str, list[str]]:
         """Return a dict of required and optional permissions."""
         if self.permission_required is None:
             _class = self.__class__.__name__
@@ -258,7 +254,7 @@ class SSLRequiredMixin(PassesTestMixin):
 
     def handle_test_failure(
         self,
-    ) -> Union[http.HttpResponse, BadRequest]:
+    ) -> http.HttpResponse | BadRequest:
         """Redirect to the SSL version of the request's URL."""
         if self.redirect_to_ssl:
             current = self.request.build_absolute_uri(self.request.get_full_path())

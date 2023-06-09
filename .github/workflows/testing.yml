@@ -1,0 +1,17 @@
+name: django-brackets-testing
+on: [pull_request, workflow_dispatch]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install pytest pytest-django
+      - name: Run pytest
+        env:
+          PYTHONPATH: tests/project/:src/
+        uses: samwlms/pytest-django-action@1.9
+        with:
+          args: pytest --ds=tests.project.settings -o django_find_project=false
