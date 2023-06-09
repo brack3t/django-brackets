@@ -40,7 +40,7 @@ checks = [
   "mypy",
   "ruff",
 ]
-development = ["django>=3.2,<6", "django-rest-framework"]
+development = ["django-rest-framework", "django>=3.2,<6"]
 documentation = ["releases", "semantic-version", "sphinx"]
 testing = [
   "coverage",
@@ -115,7 +115,7 @@ disallow_untyped_calls = false
 disallow_untyped_decorators = false
 disallow_untyped_defs = false
 error_summary = true
-exclude = ["build", "dist", "docs", "tests", ".venv"]
+exclude = [".venv", "build", "dist", "docs", "tests"]
 implicit_optional = true
 no_implicit_optional = false
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
@@ -126,6 +126,13 @@ strict = false
 warn_redundant_casts = false
 warn_return_any = true
 warn_unused_ignores = true
+
+[tool.pyright]
+exclude = [".venv", "build", "dist", "docs", "tests"]
+include = ["src"]
+pythonVerion = "3.11"
+reportMissingImports = true
+reportMissingTypeStubs = false
 
 [tool.pytest.ini_options]
 # ini_options
