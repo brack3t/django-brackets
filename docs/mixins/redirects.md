@@ -1,3 +1,7 @@
+---
+hide:
+- navigation
+---
 # Redirection Mixins
 
 ## RedirectMixin

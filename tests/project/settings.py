@@ -5,7 +5,7 @@ from django.contrib.messages import constants as message_constants
 del CSRF_COOKIE_MASKED  # type: ignore
 del DEFAULT_FILE_STORAGE
 del USE_L10N
-del PASSWORD_RESET_TIMEOUT  # type: ignore
+del PASSWORD_RESET_TIMEOUT  # pyright: ignore[reportUndefinedVariable]
 del STATICFILES_STORAGE
 del USE_DEPRECATED_PYTZ  # type: ignore
 

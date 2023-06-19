@@ -3,34 +3,32 @@ build-backend = "flit_core.buildapi"
 requires = ["flit_core>=3.2,<4"]
 
 [project]
+
 authors = [{ name = "klove" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: Web Environment",
-  "Framework :: Django :: 3.2",
   "Framework :: Django :: 4.2",
   "Framework :: Django",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: Apache Software License",
   "Natural Language :: English",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ["django-rest-framework>=0.1.0", "django<6,>=3.2", "flit>=3.9.0"]
+dependencies = [
+  "django-rest-framework>=0.1.0",
+  "django<6,>=4.2",
+  "flit<4,>=3.2",
+]
 description = "Mixins to make class-based generic views simpler and neater."
-license = { text = "APACHE2.0" }
-module = { name = "brackets" }
+license = { file = "LICENSE.txt" }
 name = "django-brackets"
 readme = "README.md"
 requires-python = ">=3.11"
 version = "0.1.0"
-
-[project.scripts]
-all_tests = "brackets:all"
-no_coverage = "brackets:no-cover"
 
 [project.urls]
 repository = "https://github.com/brack3t/django-brackets/"
@@ -118,7 +116,12 @@ development = [
   "mypy",
   "ruff",
 ]
-documentation = ["mkdocs"]
+documentation = [
+    "mkdocs>=1.4.3",
+    "pymdown-extensions>=10.0.1",
+    "pygments>=2.15.1",
+    "mkdocs-material>=9.1.16",
+]
 testing = [
   "coverage",
   "pytest",

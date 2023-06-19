@@ -1,22 +1,48 @@
-* [Access] - Mixins related to authentication and authorization.
-* [Form Views] - Mixins related to views dealing with forms.
-* [Forms] - Mixins for Django's `Form` and `ModelForm` classes.
-* [HTTP] - Mixins for controlling HTTP requests and responses
-* [Misc] - Stuff.
-* [Queries] - Mixins for manipulating querysets.
-* [Redirects] - Mixins around redirecting HTTP requests.
-* [Django REST Framework] - Mixins for the popular API library.
+---
+hide:
+    - navigation
+    - toc
+---
 
-* [Contributors]
-* [Contribution Guide]
+# django-brackets
+## Mixins to make Django's Class-based Views Simpler and Neater
 
-[Access]: access.md
-[Form Views]: form_views.md
-[Forms]: forms.md
-[HTTP]: http.md
-[Misc]: misc.md
-[Queries]: queries.md
-[Redirects]: redirects.md
-[Django REST Framework]: rest_framework.md
-[Contributors]: contributors.md
-[Contribution Guide]: contribution_guide.md
+`django-brackets` is a library of mixins to make using class-based views easier. Yes, it's a lot like [`django-braces`](https://github.com/brack3t/django-braces); it should, we wrote them both. In fact, most of `django-brackets` comes from a rewrite of `django-braces` that was just too big and breaking.
+
+Use these mixins as inspiration for your own, as well! The `PassesTestMixin` is used, for example, to build all of the Access mixins. You can use it to make your own mixins that require a request to pass some arbitrary test!
+
+As you'll see in our [contribution guide], we also love contributions. Send your mixins in today!
+
+# Mixins
+
+## HTTP- and request-related mixins
+
+These mixins are all related to authorizing and manipulating requests and responses.
+
+- [Access](mixins/access.md)
+- [HTTP](mixins/http.md)
+- [Redirects](mixins/redirects.md)
+
+## Databases, forms, and serializers
+
+If your view queries the database, uses forms, or is a form and not a view at all, these mixins may come in handy.
+
+- [Queries](mixins/queries.md)
+- [Forms](mixins/forms.md)
+- [Form Views](mixins/form_views.md)
+
+## APIs
+
+Mixins related to handling JSON and Django REST Framework.
+
+- [JSON](mixins/json.md)
+- [Django REST Framework](mixins/rest_framework.md)
+
+## Other
+
+Sometimes you just don't have a good place for something.
+
+- [Miscellaneous](mixins/misc.md)
+
+
+[contribution guide]: contribution_guide.md
