@@ -1,9 +1,12 @@
 from django.conf.global_settings import *  # noqa: F401, F403
 from django.contrib.messages import constants as message_constants
 
+del CSRF_COOKIE_MASKED
 del DEFAULT_FILE_STORAGE
-del STATICFILES_STORAGE
+del USE_L10N
 del PASSWORD_RESET_TIMEOUT
+del STATICFILES_STORAGE
+del USE_DEPRECATED_PYTZ
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
