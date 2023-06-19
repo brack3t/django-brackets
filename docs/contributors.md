@@ -1,41 +1,6 @@
-====
-Team
-====
+While we stand on the shoulders of many, many giants (some of whom are
+on the shoulders of giants themselves), the following people have directly
+contributed to the project.
 
-Project Leads
-=============
-
-* Kenneth Love <kenneth@gigantuan.net>
-* Chris Jones <chris@brack3t.com>
-
-Direct Contributors
-===================
-
-* Daniel Greenfeld
-* Drew Tempelmeyer
-* Baptiste Mispelon
-* Derek Payton
-* Rafal Stozek
-* Ethan Soergel
-* Piotr Kilczuk
-* Rodney Folz
-* Markus Zapke-Gründemann
-* Kamil Gałuszka
-* Danilo Bargen
-* Jon Bolt
-* Kit Sunde
-* Ben Cardy
-* Rag Sagar.V
-* Lacey Williams Henschel
-* Gregory Shikhman
-* Mike Bryant
-* Fabio C. Barrionuevo da Luz
-* Sam Spencer
-* Ben Wilber
-* Mfon Eti-mfon
-
-Other Contributors
-==================
-
-* The entire Python and Django communities for providing us the tools
-  and desire to build these things.
+* klove
+* Everyone who contributed to `django-braces`.

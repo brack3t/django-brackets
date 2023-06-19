@@ -34,7 +34,7 @@ version = "0.1.0"
 repository = "https://github.com/brack3t/django-brackets/"
 
 [tool.black]
-line-length = 88
+line-length = 99
 
 [tool.coverage.report]
 exclude_lines = [
@@ -117,10 +117,10 @@ development = [
   "ruff",
 ]
 documentation = [
-    "mkdocs>=1.4.3",
-    "pymdown-extensions>=10.0.1",
-    "pygments>=2.15.1",
-    "mkdocs-material>=9.1.16",
+  "mkdocs-material>=9.1.16",
+  "mkdocs>=1.4.3",
+  "pygments>=2.15.1",
+  "pymdown-extensions>=10.0.1",
 ]
 testing = [
   "coverage",
