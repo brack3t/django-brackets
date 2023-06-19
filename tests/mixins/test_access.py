@@ -7,7 +7,7 @@ import pytest
 from django.contrib.auth.models import Group, Permission
 from django.contrib.sessions.backends.db import SessionStore
 from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.timezone import now
 
 
@@ -211,13 +211,14 @@ class TestAnonymousRequired:
     @pytest.mark.parametrize(("logged_in", "status_code"), [(False, 200), (True, 400)])
     def test_mixin(self, logged_in, status_code, mixin_view, admin_user, rf):
         """AnonymousRequiredMixin should error for authenticated users."""
-        _view = mixin_view().as_view()
+        _view = mixin_view()
+        _view.http_method_names = ["get", "post", "head", "options"]
+        _view.post = lambda s, r, *a, **k: HttpResponse("django-brackets")
+        view = _view.as_view()
         user = admin_user if logged_in else None
-        request = rf.get("/")
+        request = rf.post("/")
         request.user = user
-        response = None
-
-        response = _view(request)
+        response = view(request)
         assert response.status_code == status_code
 
 

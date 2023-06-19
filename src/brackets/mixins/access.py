@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type, TypeAlias
 
 from django import http
 from django.conf import settings
@@ -16,7 +16,6 @@ from .redirects import RedirectMixin
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
-    from typing import Type, TypeAlias
 
     from . import A, K, Optional, Menu
 

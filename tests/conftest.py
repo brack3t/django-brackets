@@ -51,7 +51,7 @@ def mixin_view_factory(request: pytest.FixtureRequest) -> Callable:
     def mixin_view(**kwargs: dict) -> Type[View]:
         """Mixed-in view generator."""
         default_functions: dict = {
-            "get": lambda s, r: HttpResponse("django-brackets")
+            "get": lambda s, r, *a, **k: HttpResponse("django-brackets"),
         }
         kwargs.update(**default_functions)
         _name = f"{mixin_class.__name__}FixtureView"
