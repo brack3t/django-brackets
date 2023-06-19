@@ -18,7 +18,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
     from typing import Type, TypeAlias
 
-    from . import A, K, Menu
+    from . import A, K, Optional, Menu
 
 __all__: list[str] = [
     "PassesTestMixin",
@@ -43,13 +43,10 @@ class PassesTestMixin:
     another method is called to handle whatever comes next.
     """
 
-    dispatch_test = None
+    dispatch_test: Optional[str] = None
 
     def dispatch(
-        self,
-        request: http.HttpRequest,
-        *args: A,
-        **kwargs: K
+        self, request: http.HttpRequest, *args: A, **kwargs: K
     ) -> http.HttpResponse:
         """Run the test method and dispatch the view if it passes."""
         test_method: Callable[[], bool] = self.get_test_method()
@@ -100,9 +97,9 @@ class PassOrRedirectMixin(PassesTestMixin, RedirectMixin):
     def handle_test_failure(self) -> http.HttpResponse:
         """Redirect a failed test."""
         # redirect unauthenticated users to login
-        if ((not self.request.user or not self.request.user.is_authenticated)
-            and self.redirect_unauthenticated_users
-        ):
+        if (
+            not self.request.user or not self.request.user.is_authenticated
+        ) and self.redirect_unauthenticated_users:
             return self.redirect()
 
         return super().handle_test_failure()
@@ -214,7 +211,7 @@ class RecentLoginRequiredMixin(PassesTestMixin):
 class PermissionRequiredMixin(PassesTestMixin):
     """Require a user to have specific permission(s)."""
 
-    permission_required = None
+    permission_required: str | dict[str, list[str]] = None
     dispatch_test: str = "check_permissions"
 
     def get_permission_required(self) -> Menu:

@@ -1,7 +1,9 @@
 from django.conf.global_settings import *  # noqa: F401, F403
 from django.contrib.messages import constants as message_constants
+
 del DEFAULT_FILE_STORAGE
 del STATICFILES_STORAGE
+del PASSWORD_RESET_TIMEOUT
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -16,9 +18,7 @@ SECRET_KEY = "local"
 
 ROOT_URLCONF = "tests.project.urls"
 
-DATABASES = {
-    "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}
-}
+DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
 
 MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
