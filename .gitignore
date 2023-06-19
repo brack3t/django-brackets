@@ -20,3 +20,4 @@ pytest-coverage.txt
 coverage.xml
 .vscode/
 lcov.*
+.pdm-python

@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "flit_core.buildapi"
-requires = ["flit_core >=3.2,<4"]
+requires = ["flit_core>=3.2,<4"]
 
 [project]
 authors = [{ name = "klove" }]
@@ -19,43 +19,21 @@ classifiers = [
   "Programming Language :: Python",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ["django-rest-framework", "django<=3.2,<6", "flit"]
-dynamic = ["description", "version"]
-keywords = ["django", "forms", "mixins", "views"]
-license = { file = "LICENSE.txt" }
+dependencies = ["django-rest-framework>=0.1.0", "django<6,>=3.2", "flit>=3.9.0"]
+description = "Mixins to make class-based generic views simpler and neater."
+license = { text = "APACHE2.0" }
+module = { name = "brackets" }
 name = "django-brackets"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
+version = "0.1.0"
 
 [project.scripts]
 all_tests = "brackets:all"
 no_coverage = "brackets:no-cover"
 
 [project.urls]
-documentation = "https://django-brackets.readthedocs.io/en/latest/"
-repository = "https://github.com/brack3t/django-brackets"
-
-[project.optional-dependencies]
-checks = [
-  "black",
-  "django-stubs[compatible-mypy]",
-  "djangorestframework-stubs[compatible-mypy]",
-  "interrogate",
-  "mypy",
-  "ruff",
-]
-development = ["django-rest-framework", "django>=3.2,<6"]
-documentation = ["releases", "semantic-version", "sphinx"]
-testing = [
-  "coverage",
-  "pytest",
-  "pytest-cov",
-  "pytest-django",
-  "pytest-lazy-fixture",
-  "pytest-random-order",
-]
-
-# Tool configuration
+repository = "https://github.com/brack3t/django-brackets/"
 
 [tool.black]
 line-length = 88
@@ -131,13 +109,32 @@ warn_redundant_casts = false
 warn_return_any = true
 warn_unused_ignores = true
 
+[tool.pdm.dev-dependencies]
+development = [
+  "black",
+  "django-stubs[compatible-mypy]",
+  "djangorestframework-stubs[compatible-mypy]",
+  "interrogate",
+  "mypy",
+  "ruff",
+]
+documentation = ["mkdocs"]
+testing = [
+  "coverage",
+  "pytest",
+  "pytest-cov",
+  "pytest-django",
+  "pytest-lazy-fixture",
+  "pytest-random-order",
+  "pytest-xdist",
+]
+
 [tool.pyright]
 exclude = [".venv", "build", "dist", "docs", "tests"]
 include = ["src"]
 pythonVerion = "3.11"
 reportMissingImports = true
 reportMissingTypeStubs = false
-
 
 [tool.pytest.ini_options]
 # ini_options

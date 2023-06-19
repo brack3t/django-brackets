@@ -1,12 +1,13 @@
 from django.conf.global_settings import *  # noqa: F401, F403
 from django.contrib.messages import constants as message_constants
 
-del CSRF_COOKIE_MASKED
+# Settings deleted to prevent RemovedInDjango 5.0 warnings
+del CSRF_COOKIE_MASKED  # type: ignore
 del DEFAULT_FILE_STORAGE
 del USE_L10N
-del PASSWORD_RESET_TIMEOUT
+del PASSWORD_RESET_TIMEOUT  # type: ignore
 del STATICFILES_STORAGE
-del USE_DEPRECATED_PYTZ
+del USE_DEPRECATED_PYTZ  # type: ignore
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -14,7 +15,6 @@ TEMPLATE_DEBUG = DEBUG
 TIME_ZONE = "UTC"
 LANGUAGE_CODE = "en-US"
 SITE_ID = 1
-USE_L10N = True
 USE_TZ = True
 
 SECRET_KEY = "local"
