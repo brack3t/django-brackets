@@ -212,10 +212,23 @@ class TestMultipleFormsMixin:
         assert view.get_form_kwargs("foo")["instance"] == instance
 
     @pytest.mark.parametrize(("valid",), [(True,), (False,)])
-    @patch("brackets.mixins.MultipleFormsMixin.forms_invalid", return_value=HttpResponse())
-    @patch("brackets.mixins.MultipleFormsMixin.forms_valid", return_value=HttpResponse())
+    @patch(
+        "brackets.mixins.MultipleFormsMixin.forms_invalid", return_value=HttpResponse()
+    )
+    @patch(
+        "brackets.mixins.MultipleFormsMixin.forms_valid", return_value=HttpResponse()
+    )
     @patch("brackets.mixins.MultipleFormsMixin.validate_forms")
-    def test_post(self, validate_forms, forms_valid, forms_invalid, form_view, form_class, rf, valid):
+    def test_post(
+        self,
+        validate_forms,
+        forms_valid,
+        forms_invalid,
+        form_view,
+        form_class,
+        rf,
+        valid,
+    ):
         """Valid forms should call `forms_valid` and vice versa."""
         view = form_view()
         view.form_classes = {
@@ -223,7 +236,9 @@ class TestMultipleFormsMixin:
             "two": form_class(slug=forms.SlugField()),
         }
         validate_forms.return_value = valid
-        request = rf.post("/", data={"one-title": "django-brackets", "two-slug": "brackets"})
+        request = rf.post(
+            "/", data={"one-title": "django-brackets", "two-slug": "brackets"}
+        )
         response = view.as_view()(request)
 
         assert response.status_code == 200

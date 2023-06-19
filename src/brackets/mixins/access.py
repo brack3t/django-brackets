@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import inspect
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
@@ -10,16 +9,17 @@ from django import http
 from django.conf import settings
 from django.contrib.auth.views import logout_then_login
 from django.core.exceptions import BadRequest, ImproperlyConfigured
+from django.db.models import Model
 from django.utils.timezone import now
 
-from brackets.mixins.redirects import RedirectMixin
+from .redirects import RedirectMixin
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Callable
+    from typing import *
 
-    from . import A, K, RaiseOrCall
+    from . import A, K, StringOrMenu, Menu
 
-__all__ = [
+__all__: list[str] = [
     "PassesTestMixin",
     "PassOrRedirectMixin",
     "SuperuserRequiredMixin",
@@ -31,6 +31,8 @@ __all__ = [
     "PermissionRequiredMixin",
     "SSLRequiredMixin",
 ]
+
+User: TypeAlias = Type[settings.AUTH_USER_MODEL]
 
 
 class PassesTestMixin:
@@ -49,7 +51,7 @@ class PassesTestMixin:
         **kwargs: K
     ) -> http.HttpResponse:
         """Run the test method and dispatch the view if it passes."""
-        test_method = self.get_test_method()
+        test_method: Callable[[], bool] = self.get_test_method()
 
         if not test_method():
             return self.handle_test_failure()
@@ -62,19 +64,19 @@ class PassesTestMixin:
         Provide a callable object or a string that can be used to
         look up a callable
         """
-        _class = self.__class__.__name__
-        _test = self.dispatch_test
-        _missing_error_message = (
+        _class: str= self.__class__.__name__
+        _test: str = self.dispatch_test  # type: ignore
+        _missing_error_message: str = (
             f"{_class} is missing the `{_test}` method. "
             f"Define `{_class}.{_test}` or override "
             f"`{_class}.get_dispatch_test."
         )
-        _callable_error_message = f"{_class}.{_test} must be a callable."
+        _callable_error_message: str = f"{_class}.{_test} must be a callable."
         if self.dispatch_test is None:
             raise ImproperlyConfigured(_missing_error_message)
 
         try:
-            method = getattr(self, self.dispatch_test)
+            method: Callable = getattr(self, self.dispatch_test)
         except AttributeError as exc:
             raise ImproperlyConfigured(_missing_error_message) from exc
 
@@ -113,7 +115,7 @@ class SuperuserRequiredMixin(PassesTestMixin):
     def test_superuser(self) -> bool:
         """The user must be both authenticated and a superuser."""
         if (user := getattr(self.request, "user", None)) is not None:
-            return user.is_authenticated and user.is_superuser
+            return bool(user.is_authenticated and user.is_superuser)
         return False
 
 
@@ -132,14 +134,14 @@ class StaffUserRequiredMixin(PassesTestMixin):
 class GroupRequiredMixin(PassesTestMixin):
     """Requires an authenticated user who is also a group member."""
 
-    group_required: Union[str, list[str]] = None
+    group_required: Optional[str | list[str]] = None
     dispatch_test: str = "check_groups"
 
     def get_group_required(self) -> list[str]:
         """Return a list of required groups."""
         if self.group_required is None:
-            _class = self.__class__.__name__
-            _err_msg = (
+            _class: str = self.__class__.__name__
+            _err_msg: str = (
                 f"{_class} is missing the `group_required` "
                 f"attribute. Define `{_class}.group_required` or"
                 f"override `{_class}.get_group_required()."
@@ -211,14 +213,14 @@ class RecentLoginRequiredMixin(PassesTestMixin):
 class PermissionRequiredMixin(PassesTestMixin):
     """Require a user to have specific permission(s)."""
 
-    permission_required: Union[str, dict[str, list[str]]] = None
+    permission_required = None
     dispatch_test: str = "check_permissions"
 
-    def get_permission_required(self) -> Union[str, dict[str, list[str]]]:
+    def get_permission_required(self) -> Menu:
         """Return a dict of required and optional permissions."""
         if self.permission_required is None:
-            _class = self.__class__.__name__
-            _err_msg = (
+            _class: str = self.__class__.__name__
+            _err_msg: str = (
                 f"{_class} is missing the `permission_required` attribute. "
                 f"Define `{_class}.permission_required` or "
                 f"override `{_class}.get_permission_required()`."
@@ -230,9 +232,9 @@ class PermissionRequiredMixin(PassesTestMixin):
 
     def check_permissions(self) -> bool:
         """Check user for appropriate permissions."""
-        permissions = self.get_permission_required()
-        _all = permissions.get("all", [])
-        _any = permissions.get("any", [])
+        permissions: Menu = self.get_permission_required()
+        _all: list[str] = permissions.get("all", [])
+        _any: list[str] = permissions.get("any", [])
 
         if not getattr(self.request, "user", None):
             return False
@@ -256,9 +258,7 @@ class SSLRequiredMixin(PassesTestMixin):
 
         return self.request.is_secure()
 
-    def handle_test_failure(
-        self,
-    ) -> Union[http.HttpResponse, BadRequest]:
+    def handle_test_failure(self) -> http.HttpResponse | BadRequest:
         """Redirect to the SSL version of the request's URL."""
         if self.redirect_to_ssl:
             current = self.request.build_absolute_uri(self.request.get_full_path())

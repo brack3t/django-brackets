@@ -3,12 +3,13 @@ from typing import *
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, StreamingHttpResponse, HttpResponseBadRequest
 
-from brackets.mixins.redirects import RedirectMixin
-from . import A, CanDispatch, DOL, HasRequest, K
+from .redirects import RedirectMixin
+from . import A, CanDispatch, HasRequest, K, Menu
+
 
 class PassesTestMixin(CanDispatch, HasRequest):
-    request: HttpRequest
     dispatch_test: str
+    request: HttpRequest
     def dispatch(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse: ...
     def get_test_method(self) -> Callable[[Any], bool]: ...
     def handle_test_failure(self) -> HttpResponse: ...
@@ -28,8 +29,8 @@ class StaffUserRequiredMixin(PassesTestMixin):
     dispatch_test: str
     def test_staffuser(self) -> bool: ...
 
-class GroupRequiredMixin(PassesTestMixin):
-    group_required: Union[str, list[str]]
+class GroupRequiredMixin(PassesTestMixin, HasRequest):
+    group_required: str | list[str]
     dispatch_test: str
     def get_group_required(self) -> list[str]: ...
     def check_membership(self) -> bool: ...
@@ -51,13 +52,13 @@ class RecentLoginRequiredMixin(PassesTestMixin):
     def handle_test_failure(self) -> HttpResponseRedirect: ...
 
 class PermissionRequiredMixin(PassesTestMixin):
-    permission_required: DOL
+    permission_required: Optional[Menu]
     dispatch_test: str
-    def get_permission_required(self) -> DOL: ...
+    def get_permission_required(self) -> Menu: ...
     def check_permissions(self) -> bool: ...
 
 class SSLRequiredMixin(PassesTestMixin):
     dispatch_test: str
     redirect_to_ssl: bool
     def test_ssl(self) -> bool: ...
-    def handle_test_failure(self) -> Union[HttpResponse, HttpResponseBadRequest]: ...
+    def handle_test_failure(self) -> HttpResponse | HttpResponseBadRequest: ...

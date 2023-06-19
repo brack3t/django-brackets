@@ -1,5 +1,9 @@
 from __future__ import annotations
-from typing import Protocol, Any, Self, Type
+from typing import Any, Type, TypeVar, Generic, TypeVarTuple
+
+from django.db.models import Model, QuerySet
+from django.http import HttpRequest, HttpResponse
+
 from .access import *
 from .form_views import *
 from .forms import *
@@ -9,18 +13,19 @@ from .queries import *
 from .redirects import *
 from .rest_framework import *
 
-from django.db.models import Model, QuerySet
-from django.http import HttpRequest, HttpResponse
-
-A = tuple[Any]  # *args
+A = tuple[Any]  # args
 K = dict[Any, Any]  # **kwargs
-DOL = Type[str | dict[str, list[Any]]]  # String or Dict o' lists
-RaiseOrCall = Type[bool | Exception | Callable[[], Callable[[], bool]]]
+
+Menu = dict[str, list[Any]]
+
+# Menu = dict[str, list[Any]]
+StringOrMenu = TypeVar("StringOrMenu", bound=str | Menu)  # String or Dict o' lists
+RaiseOrCall = TypeVar("RaiseOrCall", bound=bool | Exception | Callable[[], Callable[[], bool]])
 
 class CanQuery(Protocol):
     """The concept of a view that can query."""
     queryset: QuerySet[Model]
-    def get_queryset(self: Self) -> QuerySet[Model]: ...
+    def get_queryset(self: CanQuery) -> QuerySet[Model]: ...
 
 class CanDispatch(Protocol):
     """The concept of a view that can dispatch requests."""

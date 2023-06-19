@@ -77,5 +77,6 @@ TEMPLATES = [
     },
 ]
 AUTH_PASSWORD_VALIDATORS = []
+AUTH_USER_MODEL = "auth.User"
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 MESSAGE_LEVEL = message_constants.DEBUG

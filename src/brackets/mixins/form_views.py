@@ -29,7 +29,7 @@ class FormWithUserMixin:
 
     def get_form_kwargs(self) -> dict:
         """Inject the request.user into the form's kwargs."""
-        kwargs = super().get_form_kwargs()
+        kwargs: dict[Any, Any] = super().get_form_kwargs()
         kwargs.update({"user": self.request.user})
         return kwargs
 
@@ -40,7 +40,7 @@ class FormWithUserMixin:
             return form_class
 
         class FormWithUser(UserFormMixin, form_class):
-            __doc__ = form_class.__doc__
+            __doc__: str = form_class.__doc__
 
         return FormWithUser
 

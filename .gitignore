@@ -15,6 +15,7 @@ build/
 .pytest_cache/
 .tool-versions
 pytest-coverage.txt
+.coverage
 .coverage.xml
 coverage.xml
 .vscode/
