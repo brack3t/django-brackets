@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Any, Type, TypeVar, Generic, TypeVarTuple
+from collections.abc import Callable
+from typing import Any, Protocol, TypeVar
 
 from django.db.models import Model, QuerySet
 from django.http import HttpRequest, HttpResponse

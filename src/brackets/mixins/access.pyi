@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import *
+from collections.abc import Callable
+from typing import Any, Optional
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, StreamingHttpResponse, HttpResponseBadRequest
 

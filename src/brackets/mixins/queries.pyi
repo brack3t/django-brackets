@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import *
+from typing import Iterable
 
 from django.db.models import Model, QuerySet
 from django.http import HttpRequest

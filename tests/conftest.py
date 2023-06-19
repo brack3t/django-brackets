@@ -15,7 +15,8 @@ from django.views.generic.list import MultipleObjectMixin
 from .project.models import Article
 
 if TYPE_CHECKING:
-    from typing import Callable, Type
+    from collections.abc import Callable
+    from typing import Type
 
     from django.db import models
 

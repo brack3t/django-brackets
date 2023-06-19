@@ -4,7 +4,7 @@ from django import forms
 from django.db import models
 from django.http import HttpRequest, HttpResponse
 
-from typing import *
+from typing import Any, Protocol, Type
 
 from . import CanDispatch, HasContext, A, K, HasHttpMethods, HasRequest
 

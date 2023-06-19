@@ -15,9 +15,10 @@ from django.utils.timezone import now
 from .redirects import RedirectMixin
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import *
+    from collections.abc import Callable
+    from typing import Type, TypeAlias
 
-    from . import A, K, StringOrMenu, Menu
+    from . import A, K, Menu
 
 __all__: list[str] = [
     "PassesTestMixin",

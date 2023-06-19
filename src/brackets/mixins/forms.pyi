@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from django.db import models
 
-from typing import *
+from typing import Type
 
 from . import A, K
 
