@@ -1,23 +1,5 @@
 copyright: Copyright &copy; Brack3t and contributors
-site_name: django-brackets documentation
-repo_url: https://github.com/brack3t/django-brackets
-theme:
-  name: material
-  icon:
-    repo: simple/github
-    logo: material/code-brackets
-  palette:
-    scheme: slate
-  features:
-    - navigation.footer
-    - navigation.indexes
-    - navigation.prune
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.tracking
-    - search.highlight
-    - search.share
-    - search.suggest
+docs_dir: docs/
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
@@ -43,3 +25,24 @@ nav:
     - contributors.md
 plugins:
   - search
+repo_url: https://github.com/brack3t/django-brackets
+repo_name: "brack3t/django_brackets"
+site_author: klove
+site_name: django-brackets documentation
+theme:
+  name: material
+  icon:
+    repo: simple/github
+    logo: material/code-brackets
+  palette:
+    scheme: slate
+  features:
+    - navigation.footer
+    - navigation.indexes
+    - navigation.prune
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest

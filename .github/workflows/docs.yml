@@ -5,21 +5,23 @@ on:
       - main
 jobs:
   pdm-dependencies:
-    name: build
+    name: Install dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: pdm-project/setup-pdm@v3
       - name: install dependencies
-        run: pdm sync
+        run: pdm install -dG documentation
   build-docs:
-    name: Deploy docs
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
+      - name: checkout main
         uses: actions/checkout@v2
+      - name: build docs
+        uses: moonpathbg/mkdocs_builder@latest
 
-      - name: Deploy docs
-        uses: mhausenblas/mkdocs-deploy-gh-pages@nomaterial
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+      # - name: Deploy docs
+      #   uses: mhausenblas/mkdocs-deploy-gh-pages@nomaterial
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
