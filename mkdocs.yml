@@ -28,6 +28,7 @@ plugins:
 repo_url: https://github.com/brack3t/django-brackets
 repo_name: "brack3t/django_brackets"
 site_author: klove
+site_dir: _site/
 site_name: django-brackets documentation
 theme:
   name: material
