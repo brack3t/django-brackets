@@ -3,7 +3,6 @@ build-backend = "flit_core.buildapi"
 requires = ["flit_core>=3.2,<4"]
 
 [project]
-
 authors = [{ name = "klove" }]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -142,7 +141,6 @@ reportMissingTypeStubs = false
 [tool.pytest.ini_options]
 # ini_options
 DJANGO_SETTINGS_MODULE = "tests.project.settings"
-addopts = "-c pyproject.toml"
 django_find_project = false
 markers = ["mixin", "mixin_view_factory"]
 norecursedirs = [".devcontainer", ".git", ".mypy_cache", "__pycache__", "docs"]
