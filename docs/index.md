@@ -33,15 +33,9 @@ If your view queries the database, uses forms, or is a form and not a view at al
 
 ## APIs
 
-Mixins related to handling JSON and Django REST Framework.
+Mixins related to Django REST Framework and others that don't have a better home.
 
-- [JSON](mixins/json.md)
 - [Django REST Framework](mixins/rest_framework.md)
-
-## Other
-
-Sometimes you just don't have a good place for something.
-
 - [Miscellaneous](mixins/misc.md)
 
 

@@ -2,9 +2,12 @@
 hide:
 - navigation
 ---
+
 # Form-related View Mixins
 
-The mixins in here are all related to forms, both standard and model.
+Many class-based views rely on forms to power them. Whether you're creating
+a new instance, editing an existing one, or accepting customer feedback,
+form views are your friend. The mixins in this module relate to these views.
 
 ## CSRFExemptMixin
 
@@ -39,14 +42,6 @@ Three attributes have been added, with corresponding methods, that will
 allow you to configure your view. All are dictionaries where the key is
 used to refer to the form.
 
-- `form_classes` values are the form _classes_ themselves. Use
-  `get_form_classes` to provide form classes programmatically.
-- `form_initial_values` values are dictionaries of initial data for the
-  forms. You can also provide this dictionary via `get_initial`
-- `form_instances` values are model instances to be provided to model
-  forms. Since this is usually more complicated, expect to override the
-  behavior in `get_instance`.
-
 ```py
 from brackets.mixins import MultipleFormMixin
 
@@ -60,4 +55,12 @@ class UserAndAccountView(MultipleFormMixin, FormView):
         return instances
 ```
 
-[forms.UserFormMixin]: mixins/forms.md
+- `form_classes` values are the form _classes_ themselves. Use
+  `get_form_classes` to provide form classes programmatically.
+- `form_initial_values` values are dictionaries of initial data for the
+  forms. You can also provide this dictionary via `get_initial`
+- `form_instances` values are model instances to be provided to model
+  forms. Since this is usually more complicated, expect to override the
+  behavior in `get_instance`.
+
+[forms.UserFormMixin]: forms.md#UserFormMixin

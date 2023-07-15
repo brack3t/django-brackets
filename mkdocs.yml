@@ -2,6 +2,7 @@ copyright: Copyright &copy; Brack3t and contributors
 docs_dir: docs/
 markdown_extensions:
   - pymdownx.highlight
+  - pymdownx.inlinehilite
   - pymdownx.superfences
 nav:
   - Access:

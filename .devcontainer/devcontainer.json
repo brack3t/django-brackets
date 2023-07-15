@@ -15,6 +15,7 @@
 		"ghcr.io/devcontainers-contrib/features/flit:2": {},
 		"ghcr.io/devcontainers-contrib/features/tox:2": {},
 		"ghcr.io/devcontainers-contrib/features/twine:2": {},
+		"ghcr.io/devcontainers-contrib/features/mkdocs:2": {},
 		"ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {},
 		"ghcr.io/wxw-matt/devcontainer-features/command_runner:0": {},
 		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0": {}

@@ -4,8 +4,8 @@ on:
     branches:
       - main
 jobs:
-  build-docs:
-    name: Install dependencies and build docs
+  install-dependencies:
+    name: Install dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -13,7 +13,11 @@ jobs:
 
       - name: Install Dependencies
         run: pdm install -dG documentation
-
+  build-docs:
+    name: Build docs
+    needs: install-dependencies
+    runs-on: ubuntu-latest
+    steps:
       - name: Build Docs
         uses: moonpathbg/mkdocs_builder@latest
 

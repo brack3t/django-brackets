@@ -4,13 +4,12 @@ hide:
 ---
 # Form-related Mixins
 
-The mixin in this module is meant to be applied to a Django `Form`.
+The mixins in this module should be applied to a Django `Form`, not a view.
 
 ## UserFormMixin
 
-The `UserFormMixin` should be applied to a form, not a view. When the
-form is initialized, the "user" keyword argument will be popped off into
-the `self.user` name.
+When the form is initialized, the "user" keyword argument will be popped
+off into the `self.user` name.
 
 ```py
 from brackets.mixins import UserFormMixin

@@ -10,9 +10,8 @@ of HTTP beyond what Django already does in `dispatch`.
 
 ## AllVerbsMixin
 
-The `AllVerbsMixin` allows you to easily create a view that responds with
-a single method, regardless of the HTTP verb (`GET`, `PUT`, etc) used to
-request it.
+The `AllVerbsMixin` allows you to create a view that responds with
+a single method, regardless of the HTTP verb (`GET`, `PUT`, etc) used in the request.
 
 ```py
 from brackets.mixins import AllVerbsMixin
@@ -21,6 +20,8 @@ class YouGetGET(AllVerbsMixin, TemplateView):
     def all(self, request, *args, **kwargs):
         return HttpResponse("Coming Soon")
 ```
+
+All requests for this view will receive the text "Coming Soon".
 
 ## HeaderMixin
 
@@ -45,7 +46,7 @@ customizable.
 from brackets.mixins import CacheControlMixin
 
 class AgesLikeWine(CacheControlMixin, TemplateView):
-    cache_control_max_age = 1000000000
+    cache_control_max_age = 1_000_000_000
 ```
 
 You can set the following attributes to control cache for your view:
@@ -61,7 +62,7 @@ You can set the following attributes to control cache for your view:
 - `cache_control_s_maxage`
 
 You can read more about caching and what these options relate to
-[here, in the Django documentation].
+[here, in the Django documentation][django docs].
 
 ## NeverCacheMixin
 
@@ -73,4 +74,4 @@ from brackets.mixins import NeverCacheMixin
 
 class GingerbreadMan(NeverCacheMixin, TemplateView): ...
 
-[here, in the Django documentation]: https://docs.djangoproject.com/en/stable/topics/cache/#controlling-cache-using-other-headers
+[django docs]: https://docs.djangoproject.com/en/stable/topics/cache/#controlling-cache-using-other-headers
