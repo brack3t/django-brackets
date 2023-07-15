@@ -5,31 +5,19 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:0-3.11",
 	"features": {
-		"ghcr.io/devcontainers/features/python:1": {},
+		"ghcr.io/devcontainers/features/python:1": {
+			"installJupyterlab": false,
+			"version": "3.11"
+		},
 		"ghcr.io/devcontainers-contrib/features/bash-command:1": {},
 		"ghcr.io/warrenbuckley/codespace-features/sqlite:1": {},
-		"ghcr.io/wxw-matt/devcontainer-features/command_runner:0": {},
-		"ghcr.io/devcontainers/features/common-utils:2": {},
-		"ghcr.io/devcontainers-contrib/features/fzf:1": {},
-		"ghcr.io/devcontainers-contrib/features/pipx-package:1": {},
-		"ghcr.io/stuartleeks/dev-container-features/shell-history:0": {},
-		"ghcr.io/jungaretti/features/ripgrep:1": {},
-		"ghcr.io/akhildevelops/devcontainer-features/pip:0": {},
-		"ghcr.io/devcontainers-contrib/features/act:1": {},
-		"ghcr.io/devcontainers-contrib/features/actionlint:1": {},
-		"ghcr.io/devcontainers-contrib/features/airplane-cli:1": {},
-		"ghcr.io/devcontainers-contrib/features/bandit:2": {},
-		"ghcr.io/devcontainers-contrib/features/black:2": {},
 		"ghcr.io/devcontainers-contrib/features/coverage-py:2": {},
-		"ghcr.io/devcontainers-contrib/features/flake8:2": {},
 		"ghcr.io/devcontainers-contrib/features/flit:2": {},
-		"ghcr.io/devcontainers-contrib/features/pylint:2": {},
-		"ghcr.io/devcontainers-contrib/features/ripgrep:1": {},
 		"ghcr.io/devcontainers-contrib/features/tox:2": {},
 		"ghcr.io/devcontainers-contrib/features/twine:2": {},
 		"ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {},
-		"ghcr.io/swift-server-community/swift-devcontainer-features/sqlite:1": {},
+		"ghcr.io/wxw-matt/devcontainer-features/command_runner:0": {},
 		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0": {}
 	},
-	"postCreateCommand": "pip3 install --user .[development,checks,testing] && pip3 uninstall -y django-brackets"
+	"postCreateCommand": "pipx install pdm && pdm install -G development -G testing"
 }
