@@ -29,6 +29,31 @@ readme = "README.md"
 requires-python = ">=3.11"
 version = "0.1.0"
 
+[project.optional-dependencies]
+development = [
+  "black",
+  "django-stubs[compatible-mypy]",
+  "djangorestframework-stubs[compatible-mypy]",
+  "interrogate",
+  "mypy",
+  "ruff",
+]
+documentation = [
+  "mkdocs-material>=9.1.16",
+  "mkdocs>=1.4.3",
+  "pygments>=2.15.1",
+  "pymdown-extensions>=10.0.1",
+]
+testing = [
+  "coverage",
+  "pytest",
+  "pytest-cov",
+  "pytest-django",
+  "pytest-lazy-fixture",
+  "pytest-randomly",
+  "pytest-xdist",
+]
+
 [project.urls]
 repository = "https://github.com/brack3t/django-brackets/"
 
@@ -105,31 +130,6 @@ strict = false
 warn_redundant_casts = false
 warn_return_any = true
 warn_unused_ignores = true
-
-[tool.pdm.dev-dependencies]
-development = [
-  "black",
-  "django-stubs[compatible-mypy]",
-  "djangorestframework-stubs[compatible-mypy]",
-  "interrogate",
-  "mypy",
-  "ruff",
-]
-documentation = [
-  "mkdocs-material>=9.1.16",
-  "mkdocs>=1.4.3",
-  "pygments>=2.15.1",
-  "pymdown-extensions>=10.0.1",
-]
-testing = [
-  "coverage",
-  "pytest",
-  "pytest-cov",
-  "pytest-django",
-  "pytest-lazy-fixture",
-  "pytest-random-order",
-  "pytest-xdist",
-]
 
 [tool.pyright]
 exclude = [".venv", "build", "dist", "docs", "tests"]
