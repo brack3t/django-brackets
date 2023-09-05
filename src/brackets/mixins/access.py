@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Type, TypeAlias
 
 from django import http
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.views import logout_then_login
 from django.core.exceptions import BadRequest, ImproperlyConfigured
 from django.db.models import Model
@@ -16,8 +17,9 @@ from .redirects import RedirectMixin
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
+    from typing import Optional
 
-    from . import A, K, Optional, Menu
+    from . import _A, _K, _StringOrMenu, _User
 
 __all__: list[str] = [
     "PassesTestMixin",
@@ -32,7 +34,7 @@ __all__: list[str] = [
     "SSLRequiredMixin",
 ]
 
-User: TypeAlias = Type[settings.AUTH_USER_MODEL]
+USER_MODEL = get_user_model()
 
 
 class PassesTestMixin:
@@ -44,9 +46,7 @@ class PassesTestMixin:
 
     dispatch_test: Optional[str] = None
 
-    def dispatch(
-        self, request: http.HttpRequest, *args: A, **kwargs: K
-    ) -> http.HttpResponse:
+    def dispatch(self, request: http.HttpRequest, *args: _A, **kwargs: _K) -> http.HttpResponse:
         """Run the test method and dispatch the view if it passes."""
         test_method: Callable[[], bool] = self.get_test_method()
 
@@ -61,7 +61,7 @@ class PassesTestMixin:
         Provide a callable object or a string that can be used to
         look up a callable
         """
-        _class: str= self.__class__.__name__
+        _class: str = self.__class__.__name__
         _test: str = self.dispatch_test  # type: ignore
         _missing_error_message: str = (
             f"{_class} is missing the `{_test}` method. "
@@ -210,10 +210,10 @@ class RecentLoginRequiredMixin(PassesTestMixin):
 class PermissionRequiredMixin(PassesTestMixin):
     """Require a user to have specific permission(s)."""
 
-    permission_required: str | dict[str, list[str]] = None
+    permission_required: _StringOrMenu = None
     dispatch_test: str = "check_permissions"
 
-    def get_permission_required(self) -> Menu:
+    def get_permission_required(self) -> _Menu:
         """Return a dict of required and optional permissions."""
         if self.permission_required is None:
             _class: str = self.__class__.__name__
@@ -229,7 +229,7 @@ class PermissionRequiredMixin(PassesTestMixin):
 
     def check_permissions(self) -> bool:
         """Check user for appropriate permissions."""
-        permissions: Menu = self.get_permission_required()
+        permissions: _Menu = self.get_permission_required()
         _all: list[str] = permissions.get("all", [])
         _any: list[str] = permissions.get("any", [])
 
