@@ -20,5 +20,28 @@
 		"ghcr.io/wxw-matt/devcontainer-features/command_runner:0": {},
 		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0": {}
 	},
-	"postCreateCommand": "pip install -e .[development,testing]"
+	"postCreateCommand": "pip install -e .[development,testing]",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"EditorConfig.EditorConfig",
+				"ms-python.black-formatter",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"charliermarsh.ruff"
+			],
+			"settings": {
+				"[python]": {
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.organizeImports": true
+					},
+					"languageServer": "Pylance",
+					"linting.banditEnabled": true,
+					"testing.pytestEnabled": true,
+					"testing.unittestEnbled": false
+				}
+			}
+		}
+	}
 }
