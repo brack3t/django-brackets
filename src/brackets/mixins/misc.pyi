@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from . import K, HasContext
+from . import HasContext, K
 
 class StaticContextMixin(HasContext):
     context: K

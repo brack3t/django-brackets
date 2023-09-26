@@ -1,13 +1,10 @@
-from __future__ import annotations
+from typing import Any, Protocol, Type
 
 from django import forms
 from django.db import models
 from django.http import HttpRequest, HttpResponse
 
-from typing import Any, Protocol, Type
-
-from . import CanDispatch, HasContext, A, K, HasHttpMethods, HasRequest
-
+from . import A, CanDispatch, HasContext, HasHttpMethods, HasRequest, K
 
 class HasForm(Protocol):
     form_class: type[forms.Form]

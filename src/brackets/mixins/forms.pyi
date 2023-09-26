@@ -1,11 +1,8 @@
-from __future__ import annotations
+from typing import Type
 
 from django.db import models
 
-from typing import Type
-
 from . import A, K
-
 
 class UserFormMixin:
     user: Type[models.Model]

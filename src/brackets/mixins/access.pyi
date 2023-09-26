@@ -1,18 +1,16 @@
-from __future__ import annotations
 from collections.abc import Callable
 from typing import Any, Optional
 
 from django.http import (
     HttpRequest,
     HttpResponse,
+    HttpResponseBadRequest,
     HttpResponseRedirect,
     StreamingHttpResponse,
-    HttpResponseBadRequest,
 )
 
-from .redirects import RedirectMixin
 from . import A, CanDispatch, HasRequest, K, Menu
-
+from .redirects import RedirectMixin
 
 class PassesTestMixin(CanDispatch, HasRequest):
     dispatch_test: str

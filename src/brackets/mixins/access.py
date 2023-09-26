@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, Type, TypeAlias
+from typing import TYPE_CHECKING
 
 from django import http
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.views import logout_then_login
 from django.core.exceptions import BadRequest, ImproperlyConfigured
-from django.db.models import Model
 from django.utils.timezone import now
 
 from .redirects import RedirectMixin
@@ -19,7 +18,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
     from typing import Optional
 
-    from . import _A, _K, _StringOrMenu, _User
+    from . import _A, _K, _StringOrMenu
 
 __all__: list[str] = [
     "PassesTestMixin",
