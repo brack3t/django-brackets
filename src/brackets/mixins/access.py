@@ -11,12 +11,15 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.views import logout_then_login
 from django.core.exceptions import BadRequest, ImproperlyConfigured
 from django.utils.timezone import now
+from django.views import View
 
 from .redirects import RedirectMixin
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
     from typing import Optional
+
+    from django.db.models.base import ModelBase
 
     from . import _A, _K, _StringOrMenu
 
@@ -33,17 +36,17 @@ __all__: list[str] = [
     "SSLRequiredMixin",
 ]
 
-USER_MODEL = get_user_model()
+USER_MODEL: ModelBase = get_user_model()
 
 
-class PassesTestMixin:
+class PassesTestMixin(View):
     """The view is not dispatched unless a test method passes.
 
     Executes a test function before `View.dispatch` is called. On failure,
     another method is called to handle whatever comes next.
     """
 
-    dispatch_test: Optional[str] = None
+    dispatch_test: str = ""
 
     def dispatch(self, request: http.HttpRequest, *args: _A, **kwargs: _K) -> http.HttpResponse:
         """Run the test method and dispatch the view if it passes."""
@@ -68,7 +71,7 @@ class PassesTestMixin:
             f"`{_class}.get_dispatch_test."
         )
         _callable_error_message: str = f"{_class}.{_test} must be a callable."
-        if self.dispatch_test is None:
+        if not self.dispatch_test or self.dispatch_test is None:
             raise ImproperlyConfigured(_missing_error_message)
 
         try:
