@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from django import forms
-from django.core.exceptions import ImproperlyConfigured
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
+from brackets.exceptions import BracketsConfigurationError
 from brackets.mixins.forms import UserFormMixin
 
 if TYPE_CHECKING:
@@ -84,11 +84,11 @@ class MultipleFormsMixin:
                 f"Define `{_class}.form_classes`, or override "
                 f"`{_class}.get_form_classes()`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         if not isinstance(self.form_classes, dict):
             _err_msg = f"`{_class}.form_classes` must be a dict."
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         return self.form_classes
 
@@ -108,17 +108,17 @@ class MultipleFormsMixin:
                 f"Define `{_class}.form_instances`, or override "
                 f"`{_class}.get_instances`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         if not isinstance(self.form_instances, dict):
             _err_msg = f"`{_class}.form_instances` must be a dictionary."
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         try:
             instance = self.form_instances[name]
         except (KeyError, ValueError) as exc:
             _err_msg = f"`{name}` is not an available instance."
-            raise ImproperlyConfigured(_err_msg) from exc
+            raise BracketsConfigurationError(_err_msg) from exc
         else:
             return instance
 
@@ -131,11 +131,11 @@ class MultipleFormsMixin:
                 f"Define `{_class}.form_initial_values`, or override "
                 f"`{_class}.get_initial`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         if not isinstance(self.form_initial_values, dict):
             _err_msg = f"`{_class}.form_initial_values` must be a dictionary."
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         try:
             initial = self.form_initial_values[name]

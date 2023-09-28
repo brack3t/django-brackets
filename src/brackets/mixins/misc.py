@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.core.exceptions import ImproperlyConfigured
+from brackets.exceptions import BracketsConfigurationError
 
 __all__ = ["StaticContextMixin"]
 
@@ -22,11 +22,11 @@ class StaticContextMixin:
                 f"Define `{_class}.static_context`, or override "
                 f"`{_class}.get_static_context()`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         if not isinstance(self.static_context, dict):
             _err_msg = f"{_class}.static_context must be a dictionary."
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
         return self.static_context
 
     def get_context_data(self) -> dict[str, Any]:

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import typing
 
-from django.core.exceptions import ImproperlyConfigured
+from brackets.exceptions import BracketsConfigurationError
 
 if typing.TYPE_CHECKING:  # pragma: no cover
     from typing import Dict, Type
@@ -33,11 +33,11 @@ class MultipleSerializersMixin:
                 f"Define `{_class}.serializer_classes`, or override "
                 f"`{_class}.get_serializer_classes()`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         if not isinstance(self.serializer_classes, (dict, list, tuple)):
             _err_msg = f"{_class}.serializer_classes must be a dictionary."
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         return self.serializer_classes
 

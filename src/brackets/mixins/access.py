@@ -9,9 +9,10 @@ from django import http
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.views import logout_then_login
-from django.core.exceptions import BadRequest, ImproperlyConfigured
 from django.utils.timezone import now
 from django.views import View
+
+from brackets.exceptions import BracketsConfigurationError
 
 from .redirects import RedirectMixin
 
@@ -19,6 +20,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
     from typing import Optional
 
+    from django.core.exceptions import BadRequest
     from django.db.models.base import ModelBase
 
     from . import _A, _K, _StringOrMenu
@@ -72,15 +74,15 @@ class PassesTestMixin(View):
         )
         _callable_error_message: str = f"{_class}.{_test} must be a callable."
         if not self.dispatch_test or self.dispatch_test is None:
-            raise ImproperlyConfigured(_missing_error_message)
+            raise BracketsConfigurationError(_missing_error_message)
 
         try:
             method: Callable = getattr(self, self.dispatch_test)
         except AttributeError as exc:
-            raise ImproperlyConfigured(_missing_error_message) from exc
+            raise BracketsConfigurationError(_missing_error_message) from exc
 
         if not callable(method) or not method:
-            raise ImproperlyConfigured(_callable_error_message)
+            raise BracketsConfigurationError(_callable_error_message)
 
         return method
 
@@ -133,19 +135,19 @@ class StaffUserRequiredMixin(PassesTestMixin):
 class GroupRequiredMixin(PassesTestMixin):
     """Requires an authenticated user who is also a group member."""
 
-    group_required: Optional[str | list[str]] = None
+    group_required: str | list[str] = ""
     dispatch_test: str = "check_groups"
 
     def get_group_required(self) -> list[str]:
         """Return a list of required groups."""
-        if self.group_required is None:
+        if not self.group_required or self.group_required is None:
             _class: str = self.__class__.__name__
             _err_msg: str = (
                 f"{_class} is missing the `group_required` "
                 f"attribute. Define `{_class}.group_required` or"
                 f"override `{_class}.get_group_required()."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
         if isinstance(self.group_required, str):
             return [self.group_required]
         return self.group_required
@@ -212,26 +214,26 @@ class RecentLoginRequiredMixin(PassesTestMixin):
 class PermissionRequiredMixin(PassesTestMixin):
     """Require a user to have specific permission(s)."""
 
-    permission_required: _StringOrMenu = None
+    permission_required: str | dict[str, list] = ""
     dispatch_test: str = "check_permissions"
 
-    def get_permission_required(self) -> _Menu:
+    def get_permission_required(self) -> dict[str, list]:
         """Return a dict of required and optional permissions."""
-        if self.permission_required is None:
+        if not self.permission_required:
             _class: str = self.__class__.__name__
             _err_msg: str = (
                 f"{_class} is missing the `permission_required` attribute. "
                 f"Define `{_class}.permission_required` or "
                 f"override `{_class}.get_permission_required()`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
         if isinstance(self.permission_required, str):
             return {"all": [self.permission_required]}
         return self.permission_required
 
     def check_permissions(self) -> bool:
         """Check user for appropriate permissions."""
-        permissions: _Menu = self.get_permission_required()
+        permissions: dict[str, list] = self.get_permission_required()
         _all: list[str] = permissions.get("all", [])
         _any: list[str] = permissions.get("any", [])
 

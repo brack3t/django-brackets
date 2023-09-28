@@ -1,10 +1,10 @@
-"r""Mixins related to Django ORM queries."""
+"r" "Mixins related to Django ORM queries." ""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from django.core.exceptions import ImproperlyConfigured
+from brackets.exceptions import BracketsConfigurationError
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterable
@@ -29,7 +29,7 @@ class SelectRelatedMixin:
                 f"Define `{_class}.select_related`, or override "
                 f"`{_class}.get_select_related()`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         if not isinstance(self.select_related, (tuple, list)):
             self.select_related = [self.select_related]
@@ -57,7 +57,7 @@ class PrefetchRelatedMixin:
                 f"Define `{_class}.prefetch_related`, or override "
                 f"`{_class}.get_prefetch_related()`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         if not isinstance(self.prefetch_related, (tuple, list)):
             self.prefetch_related = [self.prefetch_related]
@@ -87,7 +87,7 @@ class OrderableListMixin:
                 f"Define `{_class}.orderable_fields`, or override "
                 f"`{_class}.get_orderable_fields()`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
         return self.orderable_fields
 
     def get_orderable_field_default(self) -> str:
@@ -99,7 +99,7 @@ class OrderableListMixin:
                 f"Define `{_class}.orderable_field_default`, or override "
                 f"`{_class}.get_orderable_field_default()`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
         return self.orderable_field_default
 
     def get_orderable_direction_default(self) -> str:
@@ -108,7 +108,7 @@ class OrderableListMixin:
         if not direction or direction not in ["asc", "desc"]:
             _class = self.__class__.__name__
             _err_msg = f"{_class}.orderable_direction_default must be 'asc' or 'desc'."
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
         return direction
 
     def get_order_from_request(self) -> Iterable[str]:

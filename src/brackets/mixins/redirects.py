@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING
 from django import http
 from django.conf import settings
 from django.contrib.auth.views import redirect_to_login
-from django.core.exceptions import ImproperlyConfigured
+
+from brackets.exceptions import BracketsConfigurationError
 
 if TYPE_CHECKING:
     from typing import Optional  # pragma: no cover
@@ -37,7 +38,7 @@ class RedirectMixin:
                 f"Define `{_class}.redirect_url` or override "
                 f"`{_class}.get_redirect_url`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
         return self.redirect_url
 
 
@@ -58,12 +59,9 @@ class RedirectToLoginMixin(RedirectMixin):
                     f"Define `{_class}.login_url` or `settings.LOGIN_URL`."
                     f"Alternatively, override `{_class}.get_login_url`."
                 )
-                raise ImproperlyConfigured(_err_msg) from exc
+                raise BracketsConfigurationError(_err_msg) from exc
         return self.login_url
 
     def redirect(self) -> http.HttpResponseRedirect:
         """Generate a redirect for the login URL."""
-        return redirect_to_login(
-            self.request.get_full_path(),
-            self.get_login_url()
-        )
+        return redirect_to_login(self.request.get_full_path(), self.get_login_url())

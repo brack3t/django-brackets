@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import typing
 
-from django.core.exceptions import ImproperlyConfigured
 from django.views.decorators.cache import cache_control, never_cache
+
+from brackets.exceptions import BracketsConfigurationError
 
 if typing.TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
@@ -20,16 +21,13 @@ class AllVerbsMixin:
 
     all_verb_handler: str = "all"
 
-    def dispatch(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> HttpResponse:
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Run all requests through the all_verb_handler method."""
         if not self.all_verb_handler:
             err = (
-                f"{self.__class__.__name__} requires the all_verb_handler "
-                "attribute to be set."
+                f"{self.__class__.__name__} requires the all_verb_handler " "attribute to be set."
             )
-            raise ImproperlyConfigured(err)
+            raise BracketsConfigurationError(err)
 
         handler = getattr(self, self.all_verb_handler, self.http_method_not_allowed)
         return handler(request, *args, **kwargs)
@@ -50,9 +48,7 @@ class HeaderMixin:
             self.headers = {}
         return self.headers
 
-    def dispatch(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> HttpResponse:
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Add headers to the response."""
         response = super().dispatch(request, *args, **kwargs)
         for key, value in self.get_headers().items():
