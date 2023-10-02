@@ -35,7 +35,7 @@ development = [
   "django-stubs[compatible-mypy]",
   "djangorestframework-stubs[compatible-mypy]",
   "interrogate",
-  "mypy",
+  "mypy==1.4.1",
   "ruff",
 ]
 documentation = [
@@ -132,11 +132,16 @@ warn_return_any = true
 warn_unused_ignores = true
 
 [tool.pyright]
-exclude = [".venv", "build", "dist", "docs", "tests"]
+exclude = ["**/__pycache__", ".venv", "build", "dist", "docs", "tests"]
 include = ["src"]
 pythonVerion = "3.11"
-reportMissingImports = true
-reportMissingTypeStubs = false
+reportMissingImports = "information"
+reportMissingTypeStubs = "information"
+reportUnknownMemberType = "information"
+root = ["src"]
+strict = ["src"]
+typeCheckingMode = "strict"
+useLibraryCodeForTypes = true
 
 [tool.pytest.ini_options]
 # ini_options
@@ -221,7 +226,6 @@ ignore-init-module-imports = true
 src = ["src", "tests"]
 target-version = "py311"
 
-# format = "json"
 format = "pylint"
 
 [tool.ruff.per-file-ignores]
