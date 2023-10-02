@@ -1,9 +1,7 @@
-from typing import Type
+from typing import Any, Type
 
 from django.db import models
 
-from . import A, K
-
 class UserFormMixin:
     user: Type[models.Model]
-    def __init__(self, *args: A, **kwargs: K) -> None: ...
+    def __init__(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> None: ...

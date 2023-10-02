@@ -12,7 +12,7 @@ from brackets.exceptions import BracketsConfigurationError
 from brackets.mixins.forms import UserFormMixin
 
 if TYPE_CHECKING:
-    from typing import Any, Optional
+    from typing import Any
 
     from django.db import models
     from django.http import HttpRequest, HttpResponse
@@ -27,9 +27,9 @@ __all__ = [
 class FormWithUserMixin:
     """Automatically provide request.user to the form's kwargs."""
 
-    def get_form_kwargs(self) -> dict:
+    def get_form_kwargs(self) -> dict[str, Any]:
         """Inject the request.user into the form's kwargs."""
-        kwargs: dict[Any, Any] = super().get_form_kwargs()
+        kwargs: dict[str, Any] = super().get_form_kwargs()
         kwargs.update({"user": self.request.user})
         return kwargs
 
@@ -60,25 +60,25 @@ CsrfExemptMixin = CSRFExemptMixin
 class MultipleFormsMixin:
     """Provides a view with the ability to handle multiple Forms."""
 
-    form_classes: dict[str, forms.Form] = None
-    form_initial_values: dict[str, dict] = {}
-    form_instances: dict[str, models.Model] = None
+    form_classes: dict[str, forms.Form] = {}
+    form_initial_values: dict[str, dict[str, Any]] = {}
+    form_instances: dict[str, models.Model] = {}
 
     def __init__(self, *args, **kwargs) -> None:
         """Alias get_forms to get_form for backwards compatibility."""
         super().__init__(*args, **kwargs)
         self.get_form = self.get_forms
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
         """Add the forms to the view context."""
-        context = super().get_context_data(**kwargs)
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context["forms"] = self.get_forms()
         return context
 
-    def get_form_classes(self) -> list:
+    def get_form_classes(self) -> dict[str, forms.Form]:
         """Get the form classes to use in this view."""
-        _class = self.__class__.__name__
-        if self.form_classes is None:
+        _class: str = self.__class__.__name__
+        if not self.form_classes:
             _err_msg = (
                 f"{_class} is missing a form_classes attribute. "
                 f"Define `{_class}.form_classes`, or override "
@@ -99,10 +99,10 @@ class MultipleFormsMixin:
             _forms[name] = form_class(**self.get_form_kwargs(name))
         return _forms
 
-    def get_instance(self, name: str) -> Optional[models.Model]:
+    def get_instance(self, name: str) -> models.Model:
         """Connect instances to forms."""
         _class = self.__class__.__name__
-        if self.form_instances is None:
+        if not self.form_instances:
             _err_msg = (
                 f"{_class} is missing a `form_instances` attribute."
                 f"Define `{_class}.form_instances`, or override "
@@ -122,10 +122,10 @@ class MultipleFormsMixin:
         else:
             return instance
 
-    def get_initial(self, name: str) -> Optional[dict[str, Any]]:
+    def get_initial(self, name: str) -> dict[str, Any]:
         """Connect instances to forms."""
         _class = self.__class__.__name__
-        if self.form_initial_values is None:
+        if not self.form_initial_values:
             _err_msg = (
                 f"{_class} is missing a `form_initial_values` attribute."
                 f"Define `{_class}.form_initial_values`, or override "

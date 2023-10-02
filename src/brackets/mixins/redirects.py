@@ -30,8 +30,8 @@ class RedirectMixin:
 
     def get_redirect_url(self) -> str:
         """Get the URL to redirect to."""
-        _url = getattr(self, "redirect_url", None)
-        if _url is None or not _url:
+        url = getattr(self, "redirect_url", None)
+        if not url:
             _class = self.__class__.__name__
             _err_msg = (
                 f"{_class} is missing the `redirect_url` attribute. "
@@ -45,7 +45,7 @@ class RedirectMixin:
 class RedirectToLoginMixin(RedirectMixin):
     """Redirect failed requests to `LOGIN_URL`."""
 
-    login_url: Optional[str] = None
+    login_url: str = None
 
     def get_login_url(self) -> str:
         """Return the URL for the login page."""

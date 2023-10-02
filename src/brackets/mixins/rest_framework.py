@@ -7,7 +7,7 @@ import typing
 from brackets.exceptions import BracketsConfigurationError
 
 if typing.TYPE_CHECKING:  # pragma: no cover
-    from typing import Dict, Type
+    from typing import Type
 
     from rest_framework.serializers import Serializer
 
@@ -22,12 +22,12 @@ class MultipleSerializersMixin:
     different set of fields for a GET request than for a POST request.
     """
 
-    serializer_classes: Dict[str, Type[Serializer]] = None
+    serializer_classes: dict[str, Type[Serializer]] = {}
 
     def get_serializer_classes(self) -> dict[str, Type[Serializer]]:
         """Get necessary serializer classes."""
         _class = self.__class__.__name__
-        if self.serializer_classes is None:
+        if not self.serializer_classes:
             _err_msg = (
                 f"{_class} is missing the serializer_classes attribute. "
                 f"Define `{_class}.serializer_classes`, or override "
@@ -35,7 +35,7 @@ class MultipleSerializersMixin:
             )
             raise BracketsConfigurationError(_err_msg)
 
-        if not isinstance(self.serializer_classes, (dict, list, tuple)):
+        if not isinstance(self.serializer_classes, dict):
             _err_msg = f"{_class}.serializer_classes must be a dictionary."
             raise BracketsConfigurationError(_err_msg)
 

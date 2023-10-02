@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django import forms
+
+if TYPE_CHECKING:
+    from django.db.models import Model
 
 __all__ = [
     "UserFormMixin",
@@ -19,5 +24,5 @@ class UserFormMixin:
             raise TypeError(_err_msg)
 
         if "user" in kwargs:
-            self.user = kwargs.pop("user")
+            self.user: type[Model] = kwargs.pop("user")
         super().__init__(*args, **kwargs)
