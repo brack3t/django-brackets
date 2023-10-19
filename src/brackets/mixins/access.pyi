@@ -8,11 +8,12 @@ from django.http import (
     HttpResponseRedirect,
     StreamingHttpResponse,
 )
+from django.views.generic.base import View
 
-from . import A, CanDispatch, HasRequest, K, Menu
+from . import A, HasRequest, K, Menu
 from .redirects import RedirectMixin
 
-class PassesTestMixin(CanDispatch, HasRequest):
+class PassesTestMixin(View):
     dispatch_test: str
     request: HttpRequest
     def dispatch(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse: ...
@@ -38,7 +39,7 @@ class StaffUserRequiredMixin(PassesTestMixin):
     request: HttpRequest
     def test_staffuser(self) -> bool: ...
 
-class GroupRequiredMixin(PassesTestMixin, HasRequest):
+class GroupRequiredMixin(PassesTestMixin):
     group_required: str | list[str]
     dispatch_test: str
     def get_group_required(self) -> list[str]: ...

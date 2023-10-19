@@ -16,9 +16,10 @@ from .redirects import RedirectMixin
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
-    from typing import Optional
+    from typing import Any, Optional, TypeAlias
 
-    from . import _A, _K, _StringOrMenu
+    A: TypeAlias = tuple[Any, ...]
+    K: TypeAlias = dict[Any, Any]
 
 __all__: list[str] = [
     "PassesTestMixin",
@@ -45,7 +46,9 @@ class PassesTestMixin:
 
     dispatch_test: Optional[str] = None
 
-    def dispatch(self, request: http.HttpRequest, *args: _A, **kwargs: _K) -> http.HttpResponse:
+    def dispatch(
+        self, request: http.HttpRequest, *args: A, **kwargs: K
+    ) -> http.HttpResponse:
         """Run the test method and dispatch the view if it passes."""
         test_method: Callable[[], bool] = self.get_test_method()
 
@@ -123,19 +126,19 @@ class StaffUserRequiredMixin(PassesTestMixin):
     def test_staffuser(self) -> bool:
         """The user must be authenticated and `is_staff` must be True."""
         if (user := getattr(self.request, "user", None)) is not None:
-            return user.is_authenticated and user.is_staff
+            return bool(user.is_authenticated and user.is_staff)
         return False
 
 
 class GroupRequiredMixin(PassesTestMixin):
     """Requires an authenticated user who is also a group member."""
 
-    group_required: Optional[str | list[str]] = None
+    group_required: str | list[str] = ""
     dispatch_test: str = "check_groups"
 
     def get_group_required(self) -> list[str]:
         """Return a list of required groups."""
-        if self.group_required is None:
+        if not self.group_required:
             _class: str = self.__class__.__name__
             _err_msg: str = (
                 f"{_class} is missing the `group_required` "
@@ -151,13 +154,13 @@ class GroupRequiredMixin(PassesTestMixin):
         """Check the user's membership in the required groups."""
         return bool(
             set(self.get_group_required()).intersection(
-                [group.name for group in self.request.user.groups.all()],
+                [group.name for group in self.request.user.groups.all()],  # type: ignore
             ),
         )
 
     def check_groups(self) -> bool:
         """Check that the user is authenticated and a group member."""
-        if (user := getattr(self.request, "user", None)) is not None:
+        if (user := getattr(self.request, "user", None)) is not None:  # type: ignore
             return user.is_authenticated and self.check_membership()
         return False
 
@@ -170,7 +173,7 @@ class AnonymousRequiredMixin(PassesTestMixin):
 
     def test_anonymous(self) -> bool:
         """Accept anonymous users."""
-        if (user := getattr(self.request, "user", None)) is not None:
+        if (user := getattr(self.request, "user", None)) is not None:  # type: ignore
             return not user.is_authenticated
         return True
 
@@ -182,39 +185,42 @@ class LoginRequiredMixin(PassesTestMixin):
 
     def test_authenticated(self) -> bool:
         """The user must be authenticated."""
-        if (user := getattr(self.request, "user", None)) is not None:
-            return user.is_authenticated
+        if (user := getattr(self.request, "user", None)) is not None:  # type: ignore
+            return bool(user.is_authenticated)
         return False
 
 
 class RecentLoginRequiredMixin(PassesTestMixin):
     """Require the user to be recently authenticated."""
 
-    dispatch_test: str = "test_recent_login"
+    dispatch_test: str = "check_recent_login"
     max_age: int = 1800  # 30 minutes
 
-    def test_recent_login(self) -> bool:
+    def check_recent_login(self) -> bool:
         """Make sure the user's login is recent enough."""
-        if (user := getattr(self.request, "user", None)) is not None:
-            return user.is_authenticated and user.last_login > now() - timedelta(
-                seconds=self.max_age,
+        if (user := getattr(self.request, "user", None)) is not None:  # type: ignore
+            return all(
+                [
+                    user.is_authenticated,
+                    user.last_login > now() - timedelta(seconds=self.max_age),
+                ]
             )
         return False
 
-    def handle_test_failure(self) -> http.HttpResponseRedirect:
-        """Logout the user and redirect to login."""
-        return logout_then_login(self.request)
+    def handle_test_failure(self) -> http.HttpResponseForbidden:
+        """Response is forbidden due to an expired login."""
+        return http.HttpResponseForbidden()
 
 
 class PermissionRequiredMixin(PassesTestMixin):
     """Require a user to have specific permission(s)."""
 
-    permission_required: _StringOrMenu = None
+    permission_required: str | dict[str, list] = ""
     dispatch_test: str = "check_permissions"
 
-    def get_permission_required(self) -> _Menu:
+    def get_permission_required(self) -> dict[str, list]:
         """Return a dict of required and optional permissions."""
-        if self.permission_required is None:
+        if not self.permission_required:
             _class: str = self.__class__.__name__
             _err_msg: str = (
                 f"{_class} is missing the `permission_required` attribute. "
@@ -228,14 +234,14 @@ class PermissionRequiredMixin(PassesTestMixin):
 
     def check_permissions(self) -> bool:
         """Check user for appropriate permissions."""
-        permissions: _Menu = self.get_permission_required()
+        permissions: dict[str, list] = self.get_permission_required()
         _all: list[str] = permissions.get("all", [])
         _any: list[str] = permissions.get("any", [])
 
-        if not getattr(self.request, "user", None):
+        if not getattr(self.request, "user", None):  # type: ignore
             return False
-        perms_all = self.request.user.has_perms(_all) or []
-        perms_any = [self.request.user.has_perm(perm) for perm in _any]
+        perms_all = self.request.user.has_perms(_all) or []  # type: ignore
+        perms_any = [self.request.user.has_perm(perm) for perm in _any]  # type: ignore
 
         return any((perms_all, any(perms_any)))
 
@@ -252,12 +258,12 @@ class SSLRequiredMixin(PassesTestMixin):
         if getattr(settings, "DEBUG", False):
             return True  # pragma: no cover
 
-        return self.request.is_secure()
+        return self.request.is_secure()  # type: ignore
 
     def handle_test_failure(self) -> http.HttpResponse | BadRequest:
         """Redirect to the SSL version of the request's URL."""
         if self.redirect_to_ssl:
-            current = self.request.build_absolute_uri(self.request.get_full_path())
+            current = self.request.build_absolute_uri(self.request.get_full_path())  # type: ignore
             secure = current.replace("http://", "https://")
             return http.HttpResponsePermanentRedirect(secure)
         return super().handle_test_failure()

@@ -242,26 +242,28 @@ class TestRecentLoginRequired:
 
     @pytest.mark.parametrize(
         ("time_gap", "status_code"),
-        [(timedelta(minutes=-10), 200), (timedelta(days=-10), 302)],
+        [(timedelta(minutes=-10), 200), (timedelta(days=-10), 403)],
     )
     def test_recent_logins(self, time_gap, status_code, admin_user, rf, mixin_view):
         """Users with a recent login should be allowed."""
         _last_login = now() + time_gap
         session = SessionStore()
         session["last_login"] = _last_login
-        request = rf.get("/")
+        request = rf.post("/")
         request.session = session
         request.user = admin_user
         request.user.last_login = _last_login
 
-        response = mixin_view().as_view()(request)
+        view = mixin_view(http_allowed_methods=["post"])
+        view.post = lambda s, r, *a, **k: HttpResponse("django-brackets")
+        response = view.as_view()(request)
         assert response.status_code == status_code
 
     def test_failure(self, mixin_view, rf):
         """A request with no user is denied."""
-        request = rf.get("/")
+        request = rf.post("/")
         view = mixin_view(request=request)
-        assert not view().test_recent_login()
+        assert not view().check_recent_login()
 
 
 @pytest.mark.django_db()
