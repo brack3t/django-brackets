@@ -57,9 +57,6 @@ testing = [
 [project.urls]
 repository = "https://github.com/brack3t/django-brackets/"
 
-[tool.black]
-line-length = 99
-
 [tool.coverage.report]
 exclude_lines = [
   "if TYPE_CHECKING:",
@@ -126,7 +123,7 @@ plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 pretty = true
 show_column_numbers = true
 show_error_context = false
-strict = false
+strict = true
 warn_redundant_casts = false
 warn_return_any = true
 warn_unused_ignores = true
