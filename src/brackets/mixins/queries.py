@@ -1,4 +1,4 @@
-"r""Mixins related to Django ORM queries."""
+"r" "Mixins related to Django ORM queries." ""
 
 from __future__ import annotations
 

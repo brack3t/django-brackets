@@ -63,7 +63,4 @@ class RedirectToLoginMixin(RedirectMixin):
 
     def redirect(self) -> http.HttpResponseRedirect:
         """Generate a redirect for the login URL."""
-        return redirect_to_login(
-            self.request.get_full_path(),
-            self.get_login_url()
-        )
+        return redirect_to_login(self.request.get_full_path(), self.get_login_url())

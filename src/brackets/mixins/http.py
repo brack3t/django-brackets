@@ -20,9 +20,7 @@ class AllVerbsMixin:
 
     all_verb_handler: str = "all"
 
-    def dispatch(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> HttpResponse:
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Run all requests through the all_verb_handler method."""
         if not self.all_verb_handler:
             err = (
@@ -50,9 +48,7 @@ class HeaderMixin:
             self.headers = {}
         return self.headers
 
-    def dispatch(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> HttpResponse:
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Add headers to the response."""
         response = super().dispatch(request, *args, **kwargs)
         for key, value in self.get_headers().items():

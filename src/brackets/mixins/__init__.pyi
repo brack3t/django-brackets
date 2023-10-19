@@ -21,10 +21,13 @@ Menu = dict[str, list[Any]]
 
 # Menu = dict[str, list[Any]]
 StringOrMenu = TypeVar("StringOrMenu", bound=str | Menu)  # String or Dict o' lists
-RaiseOrCall = TypeVar("RaiseOrCall", bound=bool | Exception | Callable[[], Callable[[], bool]])
+RaiseOrCall = TypeVar(
+    "RaiseOrCall", bound=bool | Exception | Callable[[], Callable[[], bool]]
+)
 
 class CanQuery(Protocol):
     """The concept of a view that can query."""
+
     queryset: QuerySet[Model]
     def get_queryset(self: CanQuery) -> QuerySet[Model]: ...
 
@@ -62,7 +65,9 @@ class HasHttpMethods(Protocol):
     def put(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse: ...
     def trace(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse: ...
 
-class _BaseView(CanDispatch, HasContext, HasRequest, HasContent, HasHttpMethods, Protocol):
+class _BaseView(
+    CanDispatch, HasContext, HasRequest, HasContent, HasHttpMethods, Protocol
+):
     """The concept of a view."""
 
     def __init__(self, *args: A, **kwargs: K) -> None: ...

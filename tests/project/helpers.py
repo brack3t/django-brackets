@@ -40,9 +40,7 @@ class TestViewHelper:
         if view_class is None:
             view_class = self.view_class
 
-        return view_class(
-            request=request, args=args, kwargs=kwargs, **viewkwargs
-        )
+        return view_class(request=request, args=args, kwargs=kwargs, **viewkwargs)
 
     def dispatch_view(
         self, request, args=None, kwargs=None, view_class=None, **viewkwargs

@@ -112,11 +112,14 @@ class TestOrderableList:
         )
         assert view.get_queryset().query.order_by == ("-author",)
 
-    @pytest.mark.parametrize("method", [
-        "get_orderable_fields",
-        "get_orderable_field_default",
-        "get_orderable_direction_default",
-    ])
+    @pytest.mark.parametrize(
+        "method",
+        [
+            "get_orderable_fields",
+            "get_orderable_field_default",
+            "get_orderable_direction_default",
+        ],
+    )
     def test_orderable_fields_exceptions(self, method, multiple_object_view):
         """An exception is raised if `orderable_fields` is missing."""
         view = multiple_object_view()(orderable_direction_default="down")
@@ -133,7 +136,7 @@ class TestOrderableList:
             orderable_fields=["author"],
             orderable_fields_default="author",
             orderable_direction_default="asc",
-            request=request
+            request=request,
         )
         vq = view.get_queryset().values_list(flat=True)
         dq = Article.objects.order_by("-author").values_list(flat=True)

@@ -7,9 +7,7 @@ from django.views.generic import View
 @pytest.fixture
 def all_verbs_view(mixin_view):
     def view(**kwargs):
-        out_class = type(
-            "AllVerbsView", (mixin_view(), View), kwargs
-        )
+        out_class = type("AllVerbsView", (mixin_view(), View), kwargs)
         out_class.all = lambda self, request: HttpResponse("OK")
         return out_class
 
@@ -41,15 +39,14 @@ class TestAllVerbs:
 @pytest.fixture
 def cache_view(mixin_view):
     def view(**kwargs):
-        out_class = type(
-            "CacheControlView", (mixin_view(), View), kwargs
-        )
+        out_class = type("CacheControlView", (mixin_view(), View), kwargs)
         out_class.cache_control_max_age = 120
         out_class.cache_control_no_cache = 120
         out_class.get = lambda self, request: HttpResponse("OK")
         return out_class
 
     return view
+
 
 @pytest.mark.mixin("CacheControlMixin")
 class TestCacheControl:
@@ -78,10 +75,7 @@ class TestHeader:
     def test_request_headers(self, mixin_view, rf):
         """Headers coming in on a request shouldn't come out on a response."""
         _resp = HttpResponse("OK", headers={"Age": 120})
-        view = mixin_view(
-            headers={"X-Test": "YES"},
-            get=lambda s, r: _resp
-        )
+        view = mixin_view(headers={"X-Test": "YES"}, get=lambda s, r: _resp)
         response = view.as_view()(rf.get("/"))
         assert response["X-Test"] == "YES"
         with pytest.raises(KeyError):
