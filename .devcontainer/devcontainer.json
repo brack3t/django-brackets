@@ -6,21 +6,15 @@
 	"image": "mcr.microsoft.com/devcontainers/python:0-3.11",
 	"features": {
 		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": false,
 			"installJupyterlab": false,
 			"version": "3.11"
 		},
-		"ghcr.io/devcontainers-contrib/features/bash-command:1": {},
-		"ghcr.io/warrenbuckley/codespace-features/sqlite:1": {},
-		"ghcr.io/devcontainers-contrib/features/coverage-py:2": {},
-		"ghcr.io/devcontainers-contrib/features/flit:2": {},
-		"ghcr.io/devcontainers-contrib/features/tox:2": {},
-		"ghcr.io/devcontainers-contrib/features/twine:2": {},
-		"ghcr.io/devcontainers-contrib/features/mkdocs:2": {},
 		"ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {},
 		"ghcr.io/wxw-matt/devcontainer-features/command_runner:0": {},
 		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0": {}
 	},
-	"postCreateCommand": "pip install -e .[development,testing]",
+	"postStartCommand": "pip install -e .[development,testing]",
 	"customizations": {
 		"vscode": {
 			"extensions": [
