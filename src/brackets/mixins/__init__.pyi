@@ -2,7 +2,7 @@ from typing import Any, ClassVar, Protocol
 
 from django.db.models import Model, QuerySet
 from django.http import HttpRequest, HttpResponse
-from django.views.generic.base import ContextMixin, View
+from django.views.generic.base import ContextMixin
 
 from .access import *
 from .form_views import *

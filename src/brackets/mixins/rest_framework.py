@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from brackets.exceptions import BracketsConfigurationError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Type, Any, Optional
+    from typing import Optional
 
     from rest_framework.serializers import Serializer
 
@@ -22,26 +22,19 @@ class MultipleSerializersMixin:
     different set of fields for a GET request than for a POST request.
     """
 
-    serializer_classes: Optional[dict[str, Type[Serializer[Any]]]] = None
+    serializer_classes: Optional[dict[str, type[Serializer[Any]]]] = None
 
-    def get_serializer_classes(self) -> dict[str, Type[Serializer[Any]]]:
+    def get_serializer_classes(self) -> dict[str, type[Serializer[Any]]]:
         """Get necessary serializer classes."""
-        _class = self.__class__.__name__
-        if not self.serializer_classes:
-            _err_msg = (
-                f"{_class} is missing the serializer_classes attribute. "
-                f"Define `{_class}.serializer_classes`, or override "
-                f"`{_class}.get_serializer_classes()`."
-            )
-            raise BracketsConfigurationError(_err_msg)
-
-        if not isinstance(self.serializer_classes, dict):
-            _err_msg = f"{_class}.serializer_classes must be a dictionary."
-            raise BracketsConfigurationError(_err_msg)
+        raise BracketsConfigurationError(
+            "'%s' should either include a `serializer_classes` attribute, "
+            "or override the `get_serializer_classes()` method."
+            % self.__class__.__name__
+        )
 
         return self.serializer_classes
 
-    def get_serializer_class(self) -> Type[Serializer[Any]]:
+    def get_serializer_class(self) -> type[Serializer[Any]]:
         """Get the serializer class to use for this request.
 
         Defaults to using `super().serializer_class`.
@@ -52,4 +45,6 @@ class MultipleSerializersMixin:
         (E.g. admins get full serialization, others get basic serialization)
         """
         serializer_classes = self.get_serializer_classes()
+        if not serializer_classes:
+            return super().get_serializer_class()
         return serializer_classes[self.request.method.lower()]

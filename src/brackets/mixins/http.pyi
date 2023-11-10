@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, TypeAlias
+from typing import Any, Callable, ClassVar, Optional, TypeAlias
 
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
@@ -28,7 +28,9 @@ class CacheControlMixin(View):
     cache_control_max_age: Optional[int]
     cache_control_s_maxage: Optional[int]
     @classmethod
-    def get_cache_control_options(cls: type[CacheControlMixin]) -> dict[str, bool | int]: ...
+    def get_cache_control_options(
+        cls: type[CacheControlMixin]
+    ) -> dict[str, bool | int]: ...
     @classmethod
     def as_view(
         cls: type[CacheControlMixin],

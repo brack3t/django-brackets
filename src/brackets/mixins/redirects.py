@@ -2,16 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from django import http
 from django.conf import settings
 from django.contrib.auth.views import redirect_to_login
 
 from brackets.exceptions import BracketsConfigurationError
-
-if TYPE_CHECKING:
-    from typing import Optional  # pragma: no cover
 
 __all__ = [
     "RedirectMixin",

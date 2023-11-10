@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from django.http import HttpRequest
-
 from brackets.exceptions import BracketsConfigurationError
 
 if TYPE_CHECKING:  # pragma: no cover

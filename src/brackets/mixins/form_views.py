@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django import forms
 from django.utils.decorators import method_decorator
@@ -49,7 +49,9 @@ class CSRFExemptMixin:
     """Exempts the view from CSRF requirements."""
 
     @method_decorator(csrf_exempt)
-    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def dispatch(
+        self, request: HttpRequest, *args: tuple[Any], **kwargs: dict[str, Any]
+    ) -> HttpResponse:
         """Dispatch the exempted request."""
         return super().dispatch(request, *args, **kwargs)
 
@@ -60,16 +62,16 @@ CsrfExemptMixin = CSRFExemptMixin
 class MultipleFormsMixin:
     """Provides a view with the ability to handle multiple Forms."""
 
-    form_classes: dict[str, forms.Form] = {}
-    form_initial_values: dict[str, dict[str, Any]] = {}
-    form_instances: dict[str, models.Model] = {}
+    form_classes: Optional[dict[str, forms.Form]] = None
+    form_initial_values: Optional[dict[str, dict[str, Any]]] = None
+    form_instances: Optional[dict[str, models.Model]] = None
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: tuple[Any], **kwargs: dict[str, Any]) -> None:
         """Alias get_forms to get_form for backwards compatibility."""
         super().__init__(*args, **kwargs)
         self.get_form = self.get_forms
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         """Add the forms to the view context."""
         context: dict[str, Any] = super().get_context_data(**kwargs)
         context["forms"] = self.get_forms()
@@ -176,16 +178,22 @@ class MultipleFormsMixin:
         """Handle any form being invalid."""
         raise NotImplementedError
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(
+        self, request: HttpRequest, *args: tuple[Any], **kwargs: dict[str, Any]
+    ) -> HttpResponse:
         """Process POST requests: validate and run appropriate handler."""
         if self.validate_forms():
             return self.forms_valid()
         return self.forms_invalid()
 
-    def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def put(
+        self, request: HttpRequest, *args: tuple[Any], **kwargs: dict[str, Any]
+    ) -> HttpResponse:
         """Process PUT requests."""
         raise NotImplementedError
 
-    def patch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def patch(
+        self, request: HttpRequest, *args: tuple[Any], **kwargs: dict[str, Any]
+    ) -> HttpResponse:
         """Process PATCH requests."""
         raise NotImplementedError

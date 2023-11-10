@@ -18,6 +18,7 @@ from .redirects import RedirectMixin
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
+    from typing import Any
 
     from django.db.models.base import ModelBase
 
@@ -46,7 +47,9 @@ class PassesTestMixin(View):
 
     dispatch_test: str = ""
 
-    def dispatch(self, request: http.HttpRequest, *args, **kwargs) -> http.HttpResponse:
+    def dispatch(
+        self, request: http.HttpRequest, *args: tuple[Any], **kwargs: dict[str, Any]
+    ) -> http.HttpResponse:
         """Run the test method and dispatch the view if it passes."""
         test_method: Callable[..., bool] = self.get_test_method()
 
@@ -151,7 +154,9 @@ class GroupRequiredMixin(PassesTestMixin):
     def check_membership(self) -> bool:
         """Check the user's membership in the required groups."""
         groups_required: set[str] = set(self.get_group_required())
-        user_groups: set[str] = set(self.request.user.groups.values_list("name", flat=True))
+        user_groups: set[str] = set(
+            self.request.user.groups.values_list("name", flat=True)
+        )
         return bool(groups_required.intersection(user_groups))
 
     def check_groups(self) -> bool:

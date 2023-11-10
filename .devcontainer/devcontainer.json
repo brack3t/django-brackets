@@ -24,13 +24,12 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"charliermarsh.ruff",
 				"EditorConfig.EditorConfig",
 				"matangover.mypy",
-				"ms-python.black-formatter",
 				"ms-python.mypy-type-checker",
 				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"charliermarsh.ruff"
+				"ms-python.vscode-pylance"
 			],
 			"settings": {
 				"[python]": {

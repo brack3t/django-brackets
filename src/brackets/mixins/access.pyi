@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, Generic, Optional
+from typing import Any
 
 from django.http import (
     HttpRequest,

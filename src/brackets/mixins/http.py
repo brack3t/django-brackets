@@ -2,22 +2,22 @@
 
 from __future__ import annotations
 
-from typing import Any, TypeAlias
+from typing import TYPE_CHECKING, Any, Optional, TypeAlias
 
+from django.http import HttpRequest, HttpResponse
 from django.views.decorators.cache import cache_control, never_cache
 
 from brackets.exceptions import BracketsConfigurationError
 
-if typing.TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
 
-    from django.http import HttpRequest, HttpResponse
-    from django.http.response import HttpResponseBase
 
 __all__ = ["AllVerbsMixin", "HeaderMixin", "CacheControlMixin", "NeverCacheMixin"]
 
-A: TypeAlias = tuple[Any, ...]
+A: TypeAlias = tuple[Any]
 K: TypeAlias = dict[str, Any]
+_View: TypeAlias = tuple[HttpRequest, tuple[Any], dict[str, Any]]
 
 
 class AllVerbsMixin:
@@ -28,11 +28,10 @@ class AllVerbsMixin:
     def dispatch(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse:
         """Run all requests through the all_verb_handler method."""
         if not self.all_verb_handler:
-            err = (
-                f"{self.__class__.__name__} requires the all_verb_handler "  # fmt: skip
-                "attribute to be set."
+            raise BracketsConfigurationError(
+                "%s requires the all_verb_handler attribute to be set."
+                % self.__class__.__name__
             )
-            raise BracketsConfigurationError(err)
 
         handler = getattr(self, self.all_verb_handler, self.http_method_not_allowed)
         return handler(request, *args, **kwargs)
@@ -45,10 +44,15 @@ class AllVerbsMixin:
 class HeaderMixin:
     """Mixin for easily adding headers to a response."""
 
-    headers: dict[str, Any] = {}
+    headers: Optional[dict[str, Any]] = None
 
     def get_headers(self) -> dict[str, Any]:
         """Return a dictionary of headers to add to the response."""
+        if not self.headers:
+            raise BracketsConfigurationError(
+                "%s requires the `headers` attribute to be set."
+                % self.__class__.__name__
+            )
         return self.headers
 
     def dispatch(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse:
@@ -62,18 +66,20 @@ class HeaderMixin:
 class CacheControlMixin:
     """Provides a view with cache control options."""
 
-    cache_control_public = None
-    cache_control_private = None
-    cache_control_no_cache = None
-    cache_control_no_store = None
-    cache_control_no_transform = None
-    cache_control_must_revalidate = None
-    cache_control_proxy_revalidate = None
-    cache_control_max_age = None
-    cache_control_s_maxage = None
+    cache_control_public: Optional[bool] = None
+    cache_control_private: Optional[bool] = None
+    cache_control_no_cache: Optional[bool] = None
+    cache_control_no_store: Optional[bool] = None
+    cache_control_no_transform: Optional[bool] = None
+    cache_control_must_revalidate: Optional[bool] = None
+    cache_control_proxy_revalidate: Optional[bool] = None
+    cache_control_max_age: Optional[int] = None
+    cache_control_s_maxage: Optional[int] = None
 
     @classmethod
-    def get_cache_control_options(cls) -> dict[str, bool | int]:
+    def get_cache_control_options(
+        cls: type["CacheControlMixin"]
+    ) -> dict[str, bool | int]:
         """Get the view's cache-control options."""
         options: dict[str, bool | int] = {}
         for key, value in cls.__dict__.items():
@@ -82,9 +88,9 @@ class CacheControlMixin:
         return options
 
     @classmethod
-    def as_view(cls, **initkwargs: dict[str, typing.Any]):
+    def as_view(cls: type["CacheControlMixin"], **initkwargs: dict[str, Any]) -> _View:
         """Add cache control to the view."""
-        view = super().as_view(**initkwargs)
+        view: Callable[[_View], HttpResponse] = super().as_view(**initkwargs)
         return cache_control(**cls.get_cache_control_options())(view)
 
 
@@ -92,7 +98,7 @@ class NeverCacheMixin:
     """Prevents a view from being cached."""
 
     @classmethod
-    def as_view(cls, **initkwargs: dict[str, typing.Any]):
+    def as_view(cls: type["NeverCacheMixin"], **initkwargs: dict[str, Any]) -> _View:
         """Wrap the view with never_cache."""
-        view = super().as_view(**initkwargs)
+        view: Callable[[_View], HttpResponse] = super().as_view(**initkwargs)
         return never_cache(view)
