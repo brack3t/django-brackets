@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import typing
+from typing import TYPE_CHECKING
 
 from brackets.exceptions import BracketsConfigurationError
 
-if typing.TYPE_CHECKING:  # pragma: no cover
-    from typing import Type
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Type, Any, Optional
 
     from rest_framework.serializers import Serializer
 
@@ -22,9 +22,9 @@ class MultipleSerializersMixin:
     different set of fields for a GET request than for a POST request.
     """
 
-    serializer_classes: dict[str, Type[Serializer]] = {}
+    serializer_classes: Optional[dict[str, Type[Serializer[Any]]]] = None
 
-    def get_serializer_classes(self) -> dict[str, Type[Serializer]]:
+    def get_serializer_classes(self) -> dict[str, Type[Serializer[Any]]]:
         """Get necessary serializer classes."""
         _class = self.__class__.__name__
         if not self.serializer_classes:
@@ -41,7 +41,7 @@ class MultipleSerializersMixin:
 
         return self.serializer_classes
 
-    def get_serializer_class(self) -> Type[Serializer]:
+    def get_serializer_class(self) -> Type[Serializer[Any]]:
         """Get the serializer class to use for this request.
 
         Defaults to using `super().serializer_class`.

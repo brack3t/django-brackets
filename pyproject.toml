@@ -35,7 +35,7 @@ development = [
   "django-stubs[compatible-mypy]",
   "djangorestframework-stubs[compatible-mypy]",
   "interrogate",
-  "mypy==1.4.1",
+  "mypy",
   "ruff",
 ]
 documentation = [
@@ -94,6 +94,7 @@ django_settings_module = "tests.project.settings"
 name = "brackets"
 
 [tool.interrogate]
+color = true
 exclude = ["build", "conftest.py", "docs", "setup.py"]
 fail-under = 75
 ignore-init-method = true
@@ -106,29 +107,37 @@ ignore-private = false
 ignore-property-decorators = false
 ignore-regex = ["^get$", "^mock_.*"]
 ignore-semiprivate = false
-# possible values: 0 (minimal output), 1 (-v), 2 (-vv)
-color = true
 omit-covered-files = true
 quiet = false
+# possible values: 0 (minimal output), 1 (-v), 2 (-vv)
 verbose = 1
 
 [tool.mypy]
-check_untyped_defs = false
+allow_redefinition = false
+check_untyped_defs = true
 color_output = true
 disallow_untyped_calls = false
 disallow_untyped_decorators = false
 disallow_untyped_defs = false
 error_summary = true
 exclude = [".venv", "build", "dist", "docs", "tests"]
-implicit_optional = true
-no_implicit_optional = false
+ignore_errors = false
+ignore_missing_imports = true
+implicit_reexport = false
+local_partial_types = true
+no_implicit_optional = true
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 pretty = true
 show_column_numbers = true
 show_error_context = false
-strict = false
-warn_redundant_casts = false
+strict = true
+strict_equality = true
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
 warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
 warn_unused_ignores = true
 
 [tool.pyright]
@@ -144,7 +153,6 @@ typeCheckingMode = "strict"
 useLibraryCodeForTypes = true
 
 [tool.pytest.ini_options]
-# ini_options
 DJANGO_SETTINGS_MODULE = "tests.project.settings"
 django_find_project = false
 markers = ["mixin", "mixin_view_factory"]
@@ -222,8 +230,8 @@ unfixable = []
 extend-exclude = ["docs"]
 ignore-init-module-imports = true
 
-# Assume Python 3.11.
 src = ["src", "tests"]
+# Assume Python 3.11.
 target-version = "py311"
 
 format = "pylint"
