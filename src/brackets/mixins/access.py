@@ -10,7 +10,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.views import logout_then_login
 from django.utils.timezone import now
-from django.views import View
 
 from brackets.exceptions import BracketsConfigurationError
 
@@ -21,9 +20,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any
 
     from django.db.models.base import ModelBase
-
-    A: TypeAlias = tuple[Any, ...]
-    K: TypeAlias = dict[Any, Any]
 
 __all__: list[str] = [
     "PassesTestMixin",

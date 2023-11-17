@@ -29,7 +29,7 @@ class CacheControlMixin(View):
     cache_control_s_maxage: Optional[int]
     @classmethod
     def get_cache_control_options(
-        cls: type[CacheControlMixin]
+        cls: type[CacheControlMixin],
     ) -> dict[str, bool | int]: ...
     @classmethod
     def as_view(

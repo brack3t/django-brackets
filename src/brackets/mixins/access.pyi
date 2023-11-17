@@ -10,7 +10,6 @@ from django.http import (
 )
 from django.views.generic.base import View
 
-from . import CanDispatch, HasRequest
 from .redirects import RedirectMixin
 
 class PassesTestMixin(View):
