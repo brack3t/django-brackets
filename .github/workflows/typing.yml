@@ -1,4 +1,4 @@
-name: django-brackets-testing
+name: django-brackets-typing
 on: [pull_request, workflow_dispatch]
 jobs:
   test:
@@ -8,8 +8,8 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - run: pip install django django-rest-framework pytest pytest-django pytest-lazy-fixture pytest-cov
-      - name: Run pytest
+      - run: pip install mypy django-stubs[compatible-mypy] djangorestframework-stubs[compatible-mypy]
+      - name: Run mypy
         env:
           PYTHONPATH: tests/project/:src/
-        run: pytest --cov --cov-fail-under=100
+        run: mypy src
