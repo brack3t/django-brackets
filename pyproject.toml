@@ -49,7 +49,6 @@ testing = [
   "pytest-cov",
   "pytest-django",
   "pytest-lazy-fixture",
-  "pytest-mypy",
   "pytest-randomly",
   "pytest-xdist",
 ]
