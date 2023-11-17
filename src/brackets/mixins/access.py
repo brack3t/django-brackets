@@ -22,6 +22,9 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from django.db.models.base import ModelBase
 
+    A: TypeAlias = tuple[Any, ...]
+    K: TypeAlias = dict[Any, Any]
+
 __all__: list[str] = [
     "PassesTestMixin",
     "PassOrRedirectMixin",
@@ -127,7 +130,7 @@ class StaffUserRequiredMixin(PassesTestMixin):
     def test_staffuser(self) -> bool:
         """The user must be authenticated and `is_staff` must be True."""
         if (user := getattr(self.request, "user", None)) is not None:
-            return user.is_authenticated and user.is_staff
+            return bool(user.is_authenticated and user.is_staff)
         return False
 
 
@@ -161,7 +164,7 @@ class GroupRequiredMixin(PassesTestMixin):
 
     def check_groups(self) -> bool:
         """Check that the user is authenticated and a group member."""
-        if (user := getattr(self.request, "user", None)) is not None:
+        if (user := getattr(self.request, "user", None)) is not None:  # type: ignore
             return user.is_authenticated and self.check_membership()
         return False
 
@@ -174,7 +177,7 @@ class AnonymousRequiredMixin(PassesTestMixin):
 
     def test_anonymous(self) -> bool:
         """Accept anonymous users."""
-        if (user := getattr(self.request, "user", None)) is not None:
+        if (user := getattr(self.request, "user", None)) is not None:  # type: ignore
             return not user.is_authenticated
         return True
 
@@ -186,22 +189,25 @@ class LoginRequiredMixin(PassesTestMixin):
 
     def test_authenticated(self) -> bool:
         """The user must be authenticated."""
-        if (user := getattr(self.request, "user", None)) is not None:
-            return user.is_authenticated
+        if (user := getattr(self.request, "user", None)) is not None:  # type: ignore
+            return bool(user.is_authenticated)
         return False
 
 
 class RecentLoginRequiredMixin(PassesTestMixin):
     """Require the user to be recently authenticated."""
 
-    dispatch_test: str = "test_recent_login"
+    dispatch_test: str = "check_recent_login"
     max_age: int = 1800  # 30 minutes
 
-    def test_recent_login(self) -> bool:
+    def check_recent_login(self) -> bool:
         """Make sure the user's login is recent enough."""
-        if (user := getattr(self.request, "user", None)) is not None:
-            return user.is_authenticated and user.last_login > now() - timedelta(
-                seconds=self.max_age,
+        if (user := getattr(self.request, "user", None)) is not None:  # type: ignore
+            return all(
+                [
+                    user.is_authenticated,
+                    user.last_login > now() - timedelta(seconds=self.max_age),
+                ]
             )
         return False
 
@@ -236,7 +242,7 @@ class PermissionRequiredMixin(PassesTestMixin):
         _all: list[str] = permissions.get("all", [])
         _any: list[str] = permissions.get("any", [])
 
-        if not getattr(self.request, "user", None):
+        if not getattr(self.request, "user", None):  # type: ignore
             return False
         perms_all: list[bool] = self.request.user.has_perms(_all) or []
         perms_any: list[bool] = [self.request.user.has_perm(perm) for perm in _any]
@@ -256,10 +262,10 @@ class SSLRequiredMixin(PassesTestMixin):
         if getattr(settings, "DEBUG", False):
             return True  # pragma: no cover
 
-        return self.request.is_secure()
+        return self.request.is_secure()  # type: ignore
 
     def handle_dispatch_test_failure(
-        self
+        self,
     ) -> http.HttpResponse | http.HttpResponseBadRequest:
         """Redirect to the SSL version of the request's URL."""
         if self.redirect_to_ssl:

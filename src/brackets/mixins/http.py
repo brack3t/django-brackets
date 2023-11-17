@@ -99,7 +99,7 @@ class CacheControlMixin:
 
     @classmethod
     def get_cache_control_options(
-        cls: type["CacheControlMixin"]
+        cls: type["CacheControlMixin"],
     ) -> dict[str, bool | int]:
         """Get the view's cache-control options."""
         options: dict[str, bool | int] = {}

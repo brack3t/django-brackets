@@ -4,6 +4,7 @@ from django import forms
 
 from brackets import mixins
 
+
 class ValidForm(mixins.UserFormMixin, forms.Form):
     """Valid forms extend both classes."""
 
@@ -13,14 +14,16 @@ class TestUserFormMixin:
 
     def test_invalid_class(self):
         """Invalid forms raise an exception."""
+
         class _Form(mixins.UserFormMixin):
             """Testing purposes only"""
 
         with pytest.raises(TypeError):
             _Form()
 
-
-    @pytest.mark.parametrize(("form_class", "user"), [(ValidForm, True), (ValidForm, False)])
+    @pytest.mark.parametrize(
+        ("form_class", "user"), [(ValidForm, True), (ValidForm, False)]
+    )
     def test_form_has_user(self, form_class, user, admin_user):
         """Valid forms contain the user."""
         form_kwargs = {"user": admin_user} if user else {}

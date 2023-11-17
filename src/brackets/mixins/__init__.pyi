@@ -67,5 +67,5 @@ class HasHttpMethods(Protocol):  # The concept of handling HTTP verbs.
 
 class BaseView(
     CanDispatch, _ContextProtocol, HasRequest, HasContent, HasHttpMethods, Protocol
-):  # The concept of a Django oaview.
+):  # The concept of a Django view.
     def __init__(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> None: ...
