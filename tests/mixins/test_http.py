@@ -3,7 +3,6 @@ import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse
 from django.views.generic import View
-from requests import get
 
 from brackets.exceptions import BracketsConfigurationError
 
