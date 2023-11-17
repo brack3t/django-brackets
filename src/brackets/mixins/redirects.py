@@ -15,7 +15,11 @@ __all__ = [
 
 
 class RedirectMixin:
-    """Mixin to simplify redirecting a request."""
+    """Mixin to simplify redirecting a request.
+
+    This mixin is largely for internal use. You are
+    probably looking for Django's `RedirectView`.
+    """
 
     redirect_url: str = ""
 
@@ -37,14 +41,14 @@ class RedirectMixin:
         return self.redirect_url
 
 
-class RedirectToLoginMixin(RedirectMixin):
+class RedirectToLoginMixin:
     """Redirect failed requests to `LOGIN_URL`."""
 
-    login_url: str = None
+    login_url: str = ""
 
     def get_login_url(self) -> str:
         """Return the URL for the login page."""
-        if self.login_url is None:
+        if not self.login_url:
             try:
                 self.login_url = settings.LOGIN_URL
             except AttributeError as exc:

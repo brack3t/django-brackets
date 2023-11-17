@@ -19,7 +19,7 @@ If you object to the code of conduct, you are not licensed to use this software.
 ## Code Style
 
 All contributions require certain formatting and checks before they can be accepted. Your PR should:
-- be formatted with `black` with an allowed line length of 99.
+- be formatted with `ruff` with an allowed line length of 88.
 - have docstrings for all files, classes, and functions. Use `interrogate` to verify your work.
 - be well-typed. We use `mypy` for static type checking. Run `mypy src` to check your types.
 - maintain or increase code coverage.

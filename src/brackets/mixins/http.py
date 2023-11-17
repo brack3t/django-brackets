@@ -48,6 +48,9 @@ class HeaderMixin:
 
     def get_headers(self) -> dict[str, Any]:
         """Return a dictionary of headers to add to the response."""
+        if self.headers is None:
+            return {}
+
         if not self.headers:
             raise BracketsConfigurationError(
                 "%s requires the `headers` attribute to be set."
@@ -75,6 +78,24 @@ class CacheControlMixin:
     cache_control_proxy_revalidate: Optional[bool] = None
     cache_control_max_age: Optional[int] = None
     cache_control_s_maxage: Optional[int] = None
+
+    def __init__(self, **kwargs: dict[str, None | bool | int]) -> None:
+        """Set up Cache Control."""
+        self.cache_control_public = kwargs.pop("cache_control_public", None)
+        self.cache_control_private = kwargs.pop("cache_control_private", None)
+        self.cache_control_no_cache = kwargs.pop("cache_control_no_cache", None)
+        self.cache_control_no_store = kwargs.pop("cache_control_no_store", None)
+        self.cache_control_no_transform = kwargs.pop("cache_control_no_transform", None)
+        self.cache_control_must_revalidate = kwargs.pop(
+            "cache_control_must_revalidate", None
+        )
+        self.cache_control_proxy_revalidate = kwargs.pop(
+            "cache_control_proxy_revalidate", None
+        )
+        self.cache_control_max_age = kwargs.pop("cache_control_max_age", None)
+        self.cache_control_s_maxage = kwargs.pop("cache_control_s_maxage", None)
+
+        super().__init__(**kwargs)
 
     @classmethod
     def get_cache_control_options(

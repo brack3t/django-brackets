@@ -17,10 +17,11 @@ class Article(models.Model):
     body = models.TextField()
     slug = models.SlugField(blank=True)
 
-    class Meta:
+    class Meta:  # noqa: D106
         app_label = "project"
 
     def __str__(self) -> str:
+        """Return the string version of an Article."""
         return f"_{self.title}_ by {self.author}."
 
 
@@ -34,14 +35,15 @@ class CanonicalArticle(models.Model):
     body = models.TextField()
     slug = models.SlugField(blank=True)
 
-    class Meta:
+    class Meta:  # noqa: D106
         app_label = "project"
+
+    def __str__(self) -> str:
+        """Return the string version of a CanonicalArticle."""
+        return f"_{self.title}_ by {self.author}."
 
     def get_canonical_slug(self) -> str:
         """Return the slug of record."""
         if self.author:
             return f"{self.author.username}-{self.slug}"
         return f"unauthored-{self.slug}"
-
-    def __str__(self) -> str:
-        return f"_{self.title}_ by {self.author}."

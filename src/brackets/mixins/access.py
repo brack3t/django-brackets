@@ -38,7 +38,7 @@ __all__: list[str] = [
 USER_MODEL: ModelBase = get_user_model()
 
 
-class PassesTestMixin(View):
+class PassesTestMixin:
     """The view is not dispatched unless a test method passes.
 
     Executes a test function before `View.dispatch` is called. On failure,
@@ -54,7 +54,7 @@ class PassesTestMixin(View):
         test_method: Callable[..., bool] = self.get_test_method()
 
         if not test_method():
-            return self.handle_test_failure()
+            return self.handle_dispatch_test_failure()
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -85,7 +85,7 @@ class PassesTestMixin(View):
 
         return method
 
-    def handle_test_failure(self) -> http.HttpResponse | http.HttpResponseBadRequest:
+    def handle_dispatch_test_failure(self) -> http.HttpResponse:
         """Test failed, raise an exception or redirect."""
         return http.HttpResponseBadRequest()
 
@@ -96,7 +96,7 @@ class PassOrRedirectMixin(PassesTestMixin, RedirectMixin):
     redirect_url: str = "/"
     redirect_unauthenticated_users: bool = True
 
-    def handle_test_failure(self) -> http.HttpResponse:
+    def handle_dispatch_test_failure(self) -> http.HttpResponse:
         """Redirect a failed test."""
         # redirect unauthenticated users to login
         if (
@@ -104,7 +104,7 @@ class PassOrRedirectMixin(PassesTestMixin, RedirectMixin):
         ) and self.redirect_unauthenticated_users:
             return self.redirect()
 
-        return super().handle_test_failure()
+        return super().handle_dispatch_test_failure()
 
 
 class SuperuserRequiredMixin(PassesTestMixin):
@@ -205,7 +205,7 @@ class RecentLoginRequiredMixin(PassesTestMixin):
             )
         return False
 
-    def handle_test_failure(self) -> http.HttpResponseRedirect:
+    def handle_dispatch_test_failure(self) -> http.HttpResponseRedirect:
         """Logout the user and redirect to login."""
         return logout_then_login(self.request)
 
@@ -258,10 +258,12 @@ class SSLRequiredMixin(PassesTestMixin):
 
         return self.request.is_secure()
 
-    def handle_test_failure(self) -> http.HttpResponse | http.HttpResponseBadRequest:
+    def handle_dispatch_test_failure(
+        self
+    ) -> http.HttpResponse | http.HttpResponseBadRequest:
         """Redirect to the SSL version of the request's URL."""
         if self.redirect_to_ssl:
-            current = self.request.build_absolute_uri(self.request.get_full_path())
-            secure = current.replace("http://", "https://")
+            current: str = self.request.build_absolute_uri(self.request.get_full_path())
+            secure: str = current.replace("http://", "https://")
             return http.HttpResponsePermanentRedirect(secure)
-        return super().handle_test_failure()
+        return super().handle_dispatch_test_failure()

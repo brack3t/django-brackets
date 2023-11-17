@@ -1,5 +1,6 @@
-"""Tests relating to the form mixins."""
+"""Tests relating to the form view mixins."""
 from unittest.mock import patch
+
 import pytest
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
@@ -7,6 +8,7 @@ from django.http import HttpResponse
 from pytest_lazyfixture import lazy_fixture as lazy
 
 from brackets import mixins
+from brackets.exceptions import BracketsConfigurationError
 from tests.project.models import Article
 
 
@@ -175,9 +177,8 @@ class TestMultipleFormsMixin:
     def test_get_instance_improperly_configured(self, form_view, instances):
         """An improperly configured view raises an exception."""
         view = form_view()(form_instances=instances)
-        with pytest.raises(ImproperlyConfigured) as exc:
+        with pytest.raises(BracketsConfigurationError):
             view.get_instance("django-brackets")
-            assert "instance" in exc
 
     def test_instance_found(self, form_view):
         """If a view is asked for a provided instance, it should be provided."""
@@ -185,20 +186,18 @@ class TestMultipleFormsMixin:
         view = view(form_instances={"db": "bd"})
         assert view.get_instance("db") == "bd"
 
-    @pytest.mark.parametrize("initials", [None, "django-brackets"])
-    def test_get_initial_improperly_configured(self, form_view, initials):
+    def test_get_initial_improperly_configured(self, form_view):
         """An improperly configured view raises an exception."""
-        view = form_view()(form_initial_values=initials)
-        with pytest.raises(ImproperlyConfigured):
+        view = form_view()(form_initial_values="django-brackets")
+        with pytest.raises(BracketsConfigurationError):
             view.get_initial("django-brackets")
 
     def test_get_initial_keyerror(self, form_view):
         """If the initial doesn't exist, a blank dict is returned."""
         view = form_view()(form_initial_values={"foo": "bar"})
-        initial = view.get_initial("bar")
-        assert initial == {}
+        assert view.get_initial("bar") == {}
 
-    @pytest.mark.django_db
+    @pytest.mark.django_db()
     def test_instance_in_form_kwargs(self, model_form_view, model_form_class, rf):
         """Instances should appear in ModelForm form kwargs."""
         request = rf.get("/")
@@ -211,7 +210,7 @@ class TestMultipleFormsMixin:
         )
         assert view.get_form_kwargs("foo")["instance"] == instance
 
-    @pytest.mark.parametrize(("valid",), [(True,), (False,)])
+    @pytest.mark.parametrize(("valid",), [(True,), (False,)])  # noqa: PT006
     @patch(
         "brackets.mixins.MultipleFormsMixin.forms_invalid", return_value=HttpResponse()
     )

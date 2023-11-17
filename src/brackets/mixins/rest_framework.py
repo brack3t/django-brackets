@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from brackets.exceptions import BracketsConfigurationError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional
+    from typing import ClassVar, Optional
 
     from rest_framework.serializers import Serializer
 
@@ -22,15 +22,16 @@ class MultipleSerializersMixin:
     different set of fields for a GET request than for a POST request.
     """
 
-    serializer_classes: Optional[dict[str, type[Serializer[Any]]]] = None
+    serializer_classes: ClassVar[Optional[dict[str, type[Serializer[Any]]]]] = None
 
     def get_serializer_classes(self) -> dict[str, type[Serializer[Any]]]:
         """Get necessary serializer classes."""
-        raise BracketsConfigurationError(
-            "'%s' should either include a `serializer_classes` attribute, "
-            "or override the `get_serializer_classes()` method."
-            % self.__class__.__name__
-        )
+        if not self.serializer_classes:
+            raise BracketsConfigurationError(
+                "'%s' should either include a `serializer_classes` attribute, "
+                "or override the `get_serializer_classes()` method."
+                % self.__class__.__name__
+            )
 
         return self.serializer_classes
 

@@ -49,6 +49,7 @@ testing = [
   "pytest-cov",
   "pytest-django",
   "pytest-lazy-fixture",
+  "pytest-mypy",
   "pytest-randomly",
   "pytest-xdist",
 ]
@@ -105,7 +106,6 @@ ignore-regex = ["^get$", "^mock_.*"]
 ignore-semiprivate = false
 omit-covered-files = true
 quiet = false
-# possible values: 0 (minimal output), 1 (-v), 2 (-vv)
 verbose = 1
 
 [tool.mypy]
@@ -125,7 +125,7 @@ no_implicit_optional = true
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 pretty = true
 show_column_numbers = true
-show_error_context = false
+show_error_context = true
 strict = true
 strict_equality = true
 strict_optional = true
@@ -137,7 +137,8 @@ warn_unused_configs = true
 warn_unused_ignores = true
 
 [tool.pyright]
-exclude = ["**/__pycache__", ".venv", "build", "dist", "docs", "tests"]
+exclude = ["build", "dist", "docs", "tests"]
+ignore = ["tests"]
 include = ["src"]
 pythonVerion = "3.11"
 reportMissingImports = "information"

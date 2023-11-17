@@ -102,6 +102,16 @@ class TestOrderableList:
         )
         assert view.get_queryset().query.order_by == ("author",)
 
+    def test_queryset_ordering_with_string(self, multiple_object_view, rf):
+        """No querystring arguments should use the defaults."""
+        request = rf.get("/")
+        view = multiple_object_view()(
+            orderable_field_default="author",
+            orderable_fields="author",
+            request=request,
+        )
+        assert view.get_queryset().query.order_by == ("author",)
+
     def test_queryset_ordering_with_request(self, multiple_object_view, rf):
         """Querystring arguments should override the queryset's ordering."""
         request = rf.get("/?order_dir=desc")
@@ -112,18 +122,21 @@ class TestOrderableList:
         )
         assert view.get_queryset().query.order_by == ("-author",)
 
-    @pytest.mark.parametrize("method", [
-        "get_orderable_fields",
-        "get_orderable_field_default",
-        "get_orderable_direction_default",
-    ])
+    @pytest.mark.parametrize(
+        "method",
+        [
+            "get_orderable_fields",
+            "get_orderable_field_default",
+            "get_orderable_direction_default",
+        ],
+    )
     def test_orderable_fields_exceptions(self, method, multiple_object_view):
         """An exception is raised if `orderable_fields` is missing."""
         view = multiple_object_view()(orderable_direction_default="down")
         with pytest.raises(ImproperlyConfigured):
             getattr(view, method)()
 
-    @pytest.mark.django_db
+    @pytest.mark.django_db()
     def test_basic_queryset_returned(self, user, multiple_object_view, rf):
         """Test that the correct queryset is returned."""
         request = rf.get("/?order_by=publish_date&order_dir=desc")
@@ -133,7 +146,7 @@ class TestOrderableList:
             orderable_fields=["author"],
             orderable_fields_default="author",
             orderable_direction_default="asc",
-            request=request
+            request=request,
         )
         vq = view.get_queryset().values_list(flat=True)
         dq = Article.objects.order_by("-author").values_list(flat=True)

@@ -126,8 +126,11 @@ class MultipleFormsMixin:
 
     def get_initial(self, name: str) -> dict[str, Any]:
         """Connect instances to forms."""
+        if self.form_initial_values is None:
+            return {}
+
         _class = self.__class__.__name__
-        if not self.form_initial_values:
+        if not self.form_initial_values or isinstance(self.form_initial_values, str):
             _err_msg = (
                 f"{_class} is missing a `form_initial_values` attribute."
                 f"Define `{_class}.form_initial_values`, or override "
@@ -135,13 +138,9 @@ class MultipleFormsMixin:
             )
             raise BracketsConfigurationError(_err_msg)
 
-        if not isinstance(self.form_initial_values, dict):
-            _err_msg = f"`{_class}.form_initial_values` must be a dictionary."
-            raise BracketsConfigurationError(_err_msg)
-
         try:
-            initial = self.form_initial_values[name]
-        except KeyError:
+            initial: Any = self.form_initial_values[name]
+        except (TypeError, KeyError):
             return {}
         else:
             return initial

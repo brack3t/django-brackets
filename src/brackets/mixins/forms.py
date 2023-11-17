@@ -26,5 +26,5 @@ class UserFormMixin:
             raise TypeError(_err_msg)
 
         if "user" in kwargs:
-            self.user: type[Model] = kwargs.pop("user")
+            self.user: Model = kwargs.pop("user")
         super().__init__(*args, **kwargs)
