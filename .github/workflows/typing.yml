@@ -12,4 +12,4 @@ jobs:
       - name: Run mypy
         env:
           PYTHONPATH: tests/project/:src/
-        run: mypy src
+        run: mypy --no-incremental --install-types --non-interactive src
