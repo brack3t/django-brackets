@@ -1,4 +1,4 @@
-from typing import Any, Protocol, Type
+from typing import Any, Optional, Protocol, Type
 
 from django import forms
 from django.db import models
@@ -30,11 +30,11 @@ class CSRFExemptMixin:
 CsrfExemptMixin = CSRFExemptMixin
 
 class MultipleFormsMixin(HasContext, HasHttpMethods):
+    extra_context: Optional[dict[str, Any]] = None
     form_classes: dict[str, forms.Form]
     form_initial_values: dict[str, dict[str, Any]]
     form_instances: dict[str, models.Model]
     get_form: type[forms.Form]
-    def __init__(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> None: ...
     def forms_valid(self) -> HttpResponse: ...
     def forms_invalid(self) -> HttpResponse: ...
     def get_form_classes(self) -> list[forms.Form]: ...
