@@ -69,13 +69,12 @@ class MultipleFormsMixin(FormMixin):
     form_initial_values: Optional[Mapping[str, Mapping[str, Any]]] = None
     form_instances: Optional[Mapping[str, models.Model]] = None
 
-    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         """Add the forms to the view context."""
         kwargs.setdefault("view", self)
         if self.extra_context is not None:
             kwargs.update(self.extra_context)
-        if "forms" not in kwargs:
-            kwargs["forms"] = self.get_forms()
+        kwargs["forms"] = self.get_forms()
         return kwargs
 
     def get_form_classes(self) -> Mapping[str, type[forms.BaseForm]]:
@@ -97,10 +96,10 @@ class MultipleFormsMixin(FormMixin):
 
     def get_forms(self) -> dict[str, forms.BaseForm]:
         """Instantiate the forms with their kwargs."""
-        _forms: dict[str, forms.BaseForm] = {}
+        forms: dict[str, forms.BaseForm] = {}
         for name, form_class in self.get_form_classes().items():
-            _forms[name] = form_class(**self.get_form_kwargs(name))
-        return _forms
+            forms[name] = form_class(**self.get_form_kwargs(name))
+        return forms
 
     def get_instance(self, name: str) -> models.Model:
         """Connect instances to forms."""

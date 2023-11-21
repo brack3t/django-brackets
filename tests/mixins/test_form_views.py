@@ -72,6 +72,16 @@ class TestCSRFExempt:
 class TestMultipleFormsMixin:
     """Tests related to the MultipleFormsMixin."""
 
+    def test_extra_context(self, form_view, form_class, rf):
+        """A view can take extra context."""
+        request = rf.get("/")
+        view_class = form_view()(
+            extra_context={"foo": "bar"},
+            form_classes={"one": form_class()},
+            request=request,
+        )
+        assert view_class.get_context_data()["foo"] == "bar"
+
     def test_missing_form_classes(self, form_view):
         """A view with no instances or initials should fail."""
         view_class = form_view()
