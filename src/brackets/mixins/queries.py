@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from brackets.exceptions import BracketsConfigurationError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Iterable
+    from typing import Sequence
 
     from django.db.models import Model, QuerySet
 
@@ -17,9 +17,9 @@ __all__ = ["SelectRelatedMixin", "PrefetchRelatedMixin", "OrderableListMixin"]
 class SelectRelatedMixin:
     """A mixin for adding select_related to the queryset."""
 
-    select_related: str | Iterable[str] = ""
+    select_related: str | Sequence[str] = ""
 
-    def get_select_related(self) -> Iterable[str]:
+    def get_select_related(self) -> Sequence[str]:
         """Get the fields to be select_related."""
         _class = self.__class__.__name__
 
@@ -46,9 +46,9 @@ class SelectRelatedMixin:
 class PrefetchRelatedMixin:
     """A mixin for adding prefetch_related to the queryset."""
 
-    prefetch_related: str | Iterable[str] = ""
+    prefetch_related: str | Sequence[str] = ""
 
-    def get_prefetch_related(self) -> Iterable[str]:
+    def get_prefetch_related(self) -> Sequence[str]:
         """Get the fields to be prefetch_related."""
         _class = self.__class__.__name__
         if not self.prefetch_related:
@@ -74,11 +74,11 @@ class PrefetchRelatedMixin:
 class OrderableListMixin:
     """A mixin for adding query-string based ordering to the queryset."""
 
-    orderable_fields: str | Iterable[str] = ""
+    orderable_fields: str | Sequence[str] = ""
     orderable_field_default = ""
     orderable_direction_default: str = "asc"  # "asc" or "desc"
 
-    def get_orderable_fields(self) -> Iterable[str]:
+    def get_orderable_fields(self) -> Sequence[str]:
         """Get fields to use for ordering."""
         if not self.orderable_fields:
             _class = self.__class__.__name__
@@ -113,7 +113,7 @@ class OrderableListMixin:
             raise BracketsConfigurationError(_err_msg)
         return direction
 
-    def get_order_from_request(self) -> Iterable[str]:
+    def get_order_from_request(self) -> Sequence[str]:
         """Use the query string to determine the ordering."""
         field: str = self.request.GET.get("order_by", "").lower()
         direction: str = self.request.GET.get("order_dir", "").lower()
@@ -129,7 +129,7 @@ class OrderableListMixin:
         queryset: QuerySet[Model] = super().get_queryset()
 
         field, direction = self.get_order_from_request()
-        allowed_fields: Iterable[str] = self.get_orderable_fields()
+        allowed_fields: Sequence[str] = self.get_orderable_fields()
 
         direction: str = "-" if direction == "desc" else ""
 
