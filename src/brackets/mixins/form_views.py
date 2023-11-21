@@ -95,16 +95,6 @@ class MultipleFormsMixin(FormMixin):
 
         return self.form_classes
 
-    # def get_form(  # type: ignore
-    #     self, form_class: Optional[type[forms.BaseForm]] = None
-    # ) -> dict[str, forms.BaseForm]:
-    #     """Get the form instance for the given form class.
-
-    #     Overridden for backwards-compatability with
-    #     `django-braces`.
-    #     """
-    #     return self.get_forms()
-
     def get_forms(self) -> dict[str, forms.BaseForm]:
         """Instantiate the forms with their kwargs."""
         _forms: dict[str, forms.BaseForm] = {}
