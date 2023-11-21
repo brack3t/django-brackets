@@ -104,6 +104,7 @@ def form_view_factory(mixin_view: Callable) -> Callable:
             "FormView",
             (mixin_view(), BaseFormView),
             {
+                "fields": "__all__",
                 "http_method_names": ["get", "post"],
             },
             **kwargs,
@@ -122,9 +123,10 @@ def model_form_view_factory(mixin_view: Callable) -> Callable:
             "FormView",
             (mixin_view(), ModelFormMixin),
             {
+                "fields": "__all__",
+                "http_method_names": ["get", "post"],
                 "model": Article,
                 "object": None,
-                "http_method_names": ["get", "post"],
                 "post": lambda s, r, *a, **k: HttpResponse("post"),
             },
             **kwargs,
