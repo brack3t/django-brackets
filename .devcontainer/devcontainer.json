@@ -5,15 +5,27 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:0-3.11",
 	"features": {
-		"ghcr.io/devcontainers/features/python:1": {
-			"installTools": false,
-			"installJupyterlab": false,
-			"version": "3.11"
+		// "ghcr.io/devcontainers/features/python:1": {
+		// 	"version": "3.12"
+		// },
+		"ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {
+			"version": "latest",
+			"nodeVersion": "latest"
 		},
-		"ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {},
 		"ghcr.io/wxw-matt/devcontainer-features/command_runner:0": {},
-		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0": {}
+		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0": {},
+		"ghcr.io/devcontainers-contrib/features/pipx-package:1": {
+			"includeDeps": true,
+			"package": "black",
+			"version": "latest",
+			"injections": "pylint pytest",
+			"interpreter": "python3"
+		},
+		"ghcr.io/kennethlove/multiple-pythons/multiple-pythons:1": {
+			"versions": "3.12 3.11 3.10"
+		}
 	},
+	// "postCreateCommand": "",
 	"postStartCommand": "pip install -e .[development,testing]",
 	"customizations": {
 		"vscode": {
