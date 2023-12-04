@@ -5,9 +5,6 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:0-3.11",
 	"features": {
-		// "ghcr.io/devcontainers/features/python:1": {
-		// 	"version": "3.12"
-		// },
 		"ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {
 			"version": "latest",
 			"nodeVersion": "latest"
