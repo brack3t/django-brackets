@@ -14,7 +14,7 @@ REMOVED_SETTINGS = [
     "USE_L10N",
 ]
 for setting in REMOVED_SETTINGS:
-    with contextlib.suppress(NameError):
+    with contextlib.suppress(KeyError):
         del globals()[setting]
 
 DEBUG = False
