@@ -3,12 +3,20 @@ on: [pull_request, workflow_dispatch]
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
-      - run: pip install django django-rest-framework pytest pytest-django pytest-lazy-fixture pytest-cov
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+             pip install django~=${{ matrix.django-version }}
+             pip install django-rest-framework pytest pytest-django pytest-lazy-fixture pytest-cov
       - name: Run pytest
         env:
           PYTHONPATH: tests/project/:src/
