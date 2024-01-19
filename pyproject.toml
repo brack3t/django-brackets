@@ -27,7 +27,7 @@ license = { file = "LICENSE.txt" }
 name = "django-brackets"
 readme = "README.md"
 requires-python = ">=3.10"
-version = "2023"
+version = "2024"
 
 [project.optional-dependencies]
 development = [

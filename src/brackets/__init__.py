@@ -5,7 +5,7 @@ generic class-based views simpler.
 """
 
 __title__ = "brackets"
-__version__ = "2023"
+__version__ = "2024"
 __author__ = "Kenneth Love"
 __license__ = "Apache-2.0"
-__copyright__ = "Copyright 2023 Kenneth Love"
+__copyright__ = "Copyright Kenneth Love"
