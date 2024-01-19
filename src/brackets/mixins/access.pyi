@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, Optional
+from typing import Any
 
 from django.http import (
     HttpRequest,
@@ -10,13 +10,14 @@ from django.http import (
 )
 from django.views.generic.base import View
 
-from . import A, HasRequest, K, Menu
 from .redirects import RedirectMixin
 
 class PassesTestMixin(View):
     dispatch_test: str
     request: HttpRequest
-    def dispatch(self, request: HttpRequest, *args: A, **kwargs: K) -> HttpResponse: ...
+    def dispatch(
+        self, request: HttpRequest, *args: tuple[Any, ...], **kwargs: dict[Any, Any]
+    ) -> HttpResponse: ...
     def get_test_method(self) -> Callable[[Any], bool]: ...
     def handle_test_failure(self) -> HttpResponse: ...
 
@@ -62,9 +63,9 @@ class RecentLoginRequiredMixin(PassesTestMixin):
     def handle_test_failure(self) -> HttpResponseRedirect: ...
 
 class PermissionRequiredMixin(PassesTestMixin):
-    permission_required: Optional[Menu]
+    permission_required: str | dict[str, list[str]]
     dispatch_test: str
-    def get_permission_required(self) -> Menu: ...
+    def get_permission_required(self) -> dict[str, list[str]]: ...
     def check_permissions(self) -> bool: ...
 
 class SSLRequiredMixin(PassesTestMixin):

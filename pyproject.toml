@@ -26,12 +26,11 @@ description = "Mixins to make class-based generic views simpler and neater."
 license = { file = "LICENSE.txt" }
 name = "django-brackets"
 readme = "README.md"
-requires-python = ">=3.11"
-version = "0.1.0"
+requires-python = ">=3.10"
+version = "2023"
 
 [project.optional-dependencies]
 development = [
-  "black",
   "django-stubs[compatible-mypy]",
   "djangorestframework-stubs[compatible-mypy]",
   "interrogate",
@@ -52,6 +51,7 @@ testing = [
   "pytest-lazy-fixture",
   "pytest-randomly",
   "pytest-xdist",
+  "tox",
 ]
 
 [project.urls]
@@ -91,6 +91,7 @@ django_settings_module = "tests.project.settings"
 name = "brackets"
 
 [tool.interrogate]
+color = true
 exclude = ["build", "conftest.py", "docs", "setup.py"]
 fail-under = 75
 ignore-init-method = true
@@ -103,40 +104,52 @@ ignore-private = false
 ignore-property-decorators = false
 ignore-regex = ["^get$", "^mock_.*"]
 ignore-semiprivate = false
-# possible values: 0 (minimal output), 1 (-v), 2 (-vv)
-color = true
 omit-covered-files = true
 quiet = false
 verbose = 1
 
 [tool.mypy]
-check_untyped_defs = false
+allow_redefinition = false
+check_untyped_defs = true
 color_output = true
 disallow_untyped_calls = false
 disallow_untyped_decorators = false
 disallow_untyped_defs = false
 error_summary = true
-exclude = [".venv", "build", "dist", "docs", "tests"]
-implicit_optional = true
-no_implicit_optional = false
+exclude = [".venv", "build", "dist", "docs", "tests/*"]
+ignore_errors = false
+ignore_missing_imports = true
+implicit_reexport = false
+local_partial_types = true
+no_implicit_optional = true
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 pretty = true
 show_column_numbers = true
-show_error_context = false
+show_error_context = true
 strict = true
-warn_redundant_casts = false
+strict_equality = true
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
 warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
 warn_unused_ignores = true
 
 [tool.pyright]
-exclude = [".venv", "build", "dist", "docs", "tests"]
+exclude = ["build", "dist", "docs", "tests"]
+ignore = ["tests"]
 include = ["src"]
 pythonVerion = "3.11"
-reportMissingImports = true
-reportMissingTypeStubs = false
+reportMissingImports = "information"
+reportMissingTypeStubs = "information"
+reportUnknownMemberType = "information"
+root = ["src"]
+strict = ["src"]
+typeCheckingMode = "strict"
+useLibraryCodeForTypes = true
 
 [tool.pytest.ini_options]
-# ini_options
 DJANGO_SETTINGS_MODULE = "tests.project.settings"
 django_find_project = false
 markers = ["mixin", "mixin_view_factory"]
@@ -176,50 +189,28 @@ select = [
 ]
 
 # ignore
-ignore = ["ANN101", "F403"]
+ignore = ["ANN101", "COM812", "D203", "D211", "D213", "F403"]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = [
-  "ANN",
-  "B",
-  "BLE",
-  "COM",
-  "D",
-  "DJ",
-  "E",
-  "EM",
-  "ERA",
-  "F",
-  "FBT",
-  "G",
-  "I",
-  "INP",
-  "N",
-  "PIE",
-  "PT",
-  "PYI",
-  "Q",
-  "RET",
-  "RSE",
-  "RUF",
-  "S",
-  "SIM",
-  "T20",
-  "TCH",
-  "TRY",
-]
-
+fixable = ["ALL"]
 unfixable = []
 
 extend-exclude = ["docs"]
 ignore-init-module-imports = true
 
-# Assume Python 3.11.
 src = ["src", "tests"]
+# Assume Python 3.11.
 target-version = "py311"
 
-# format = "json"
-format = "pylint"
+indent-width = 4
+line-length = 88
+output-format = "pylint"
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "auto"
+quote-style = "double"
+skip-magic-trailing-comma = false
 
 [tool.ruff.per-file-ignores]
 "src/brackets/*.pyi" = [
@@ -234,7 +225,7 @@ format = "pylint"
   "ANN201", # Missing return type annotation for public function
   "ANN202", # Missing return type annotation for private function
   "FBT001", # Positional Boolean
-  "S101",   # Missing return type annotation
+  "S101",   # assert used
 ]
 
 [tool.ruff.isort]

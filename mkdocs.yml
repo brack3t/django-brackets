@@ -5,6 +5,8 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.superfences
 nav:
+  - Home:
+    - index.md
   - Access:
     - mixins/access.md
   - Django REST Framework:
@@ -23,6 +25,7 @@ nav:
     - mixins/redirects.md
   - Contribution:
     - contribution_guide.md
+  - Contributors:
     - contributors.md
 plugins:
   - search

@@ -21,3 +21,4 @@ coverage.xml
 .vscode/
 lcov.*
 .pdm-python
+_site/

@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import typing
+from typing import TYPE_CHECKING, Any
 
-from django.core.exceptions import ImproperlyConfigured
+from brackets.exceptions import BracketsConfigurationError
 
-if typing.TYPE_CHECKING:  # pragma: no cover
-    from typing import Dict, Type
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import ClassVar, Optional
 
     from rest_framework.serializers import Serializer
 
@@ -22,26 +22,20 @@ class MultipleSerializersMixin:
     different set of fields for a GET request than for a POST request.
     """
 
-    serializer_classes: Dict[str, Type[Serializer]] = None
+    serializer_classes: ClassVar[Optional[dict[str, type[Serializer[Any]]]]] = None
 
-    def get_serializer_classes(self) -> dict[str, Type[Serializer]]:
+    def get_serializer_classes(self) -> dict[str, type[Serializer[Any]]]:
         """Get necessary serializer classes."""
-        _class = self.__class__.__name__
-        if self.serializer_classes is None:
-            _err_msg = (
-                f"{_class} is missing the serializer_classes attribute. "
-                f"Define `{_class}.serializer_classes`, or override "
-                f"`{_class}.get_serializer_classes()`."
+        if not self.serializer_classes:
+            raise BracketsConfigurationError(
+                "'%s' should either include a `serializer_classes` attribute, "
+                "or override the `get_serializer_classes()` method."
+                % self.__class__.__name__
             )
-            raise ImproperlyConfigured(_err_msg)
-
-        if not isinstance(self.serializer_classes, (dict, list, tuple)):
-            _err_msg = f"{_class}.serializer_classes must be a dictionary."
-            raise ImproperlyConfigured(_err_msg)
 
         return self.serializer_classes
 
-    def get_serializer_class(self) -> Type[Serializer]:
+    def get_serializer_class(self) -> type[Serializer[Any]]:
         """Get the serializer class to use for this request.
 
         Defaults to using `super().serializer_class`.
@@ -52,4 +46,6 @@ class MultipleSerializersMixin:
         (E.g. admins get full serialization, others get basic serialization)
         """
         serializer_classes = self.get_serializer_classes()
+        if not serializer_classes:
+            return super().get_serializer_class()
         return serializer_classes[self.request.method.lower()]

@@ -2,17 +2,20 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 from django import forms
-from django.core.exceptions import ImproperlyConfigured
+from django.forms.forms import BaseForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.base import ContextMixin
+from django.views.generic.edit import FormMixin
 
+from brackets.exceptions import BracketsConfigurationError
 from brackets.mixins.forms import UserFormMixin
 
 if TYPE_CHECKING:
-    from typing import Any, Optional
+    from typing import Mapping, Sequence
 
     from django.db import models
     from django.http import HttpRequest, HttpResponse
@@ -24,18 +27,18 @@ __all__ = [
 ]
 
 
-class FormWithUserMixin:
+class FormWithUserMixin(FormMixin):
     """Automatically provide request.user to the form's kwargs."""
 
-    def get_form_kwargs(self) -> dict:
+    def get_form_kwargs(self) -> dict[str, Any]:
         """Inject the request.user into the form's kwargs."""
-        kwargs: dict[Any, Any] = super().get_form_kwargs()
+        kwargs: dict[str, Any] = super().get_form_kwargs()
         kwargs.update({"user": self.request.user})
         return kwargs
 
-    def get_form_class(self) -> type[forms.Form]:
+    def get_form_class(self) -> type[UserFormMixin]:
         """Get the form class or wrap it with UserFormMixin."""
-        form_class: type[forms.Form] = super().get_form_class()
+        form_class: type["FormWithUserMixin"] = super().get_form_class()
         if issubclass(form_class, UserFormMixin):
             return form_class
 
@@ -49,7 +52,9 @@ class CSRFExemptMixin:
     """Exempts the view from CSRF requirements."""
 
     @method_decorator(csrf_exempt)
-    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def dispatch(
+        self, request: HttpRequest, *args: Sequence[Any], **kwargs: Mapping[str, Any]
+    ) -> HttpResponse:
         """Dispatch the exempted request."""
         return super().dispatch(request, *args, **kwargs)
 
@@ -57,96 +62,92 @@ class CSRFExemptMixin:
 CsrfExemptMixin = CSRFExemptMixin
 
 
-class MultipleFormsMixin:
+class MultipleFormsMixin(FormMixin):
     """Provides a view with the ability to handle multiple Forms."""
 
-    form_classes: dict[str, forms.Form] = None
-    form_initial_values: dict[str, dict] = {}
-    form_instances: dict[str, models.Model] = None
+    form_classes: Optional[Mapping[str, type[forms.BaseForm]]] = None
+    form_initial_values: Optional[Mapping[str, Mapping[str, Any]]] = None
+    form_instances: Optional[Mapping[str, models.Model]] = None
 
-    def __init__(self, *args, **kwargs) -> None:
-        """Alias get_forms to get_form for backwards compatibility."""
-        super().__init__(*args, **kwargs)
-        self.get_form = self.get_forms
-
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         """Add the forms to the view context."""
-        context = super().get_context_data(**kwargs)
-        context["forms"] = self.get_forms()
-        return context
+        kwargs.setdefault("view", self)
+        if self.extra_context is not None:
+            kwargs.update(self.extra_context)
+        kwargs["forms"] = self.get_forms()
+        return kwargs
 
-    def get_form_classes(self) -> list:
+    def get_form_classes(self) -> Mapping[str, type[forms.BaseForm]]:
         """Get the form classes to use in this view."""
-        _class = self.__class__.__name__
-        if self.form_classes is None:
+        _class: str = self.__class__.__name__
+        if not self.form_classes:
             _err_msg = (
                 f"{_class} is missing a form_classes attribute. "
                 f"Define `{_class}.form_classes`, or override "
                 f"`{_class}.get_form_classes()`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         if not isinstance(self.form_classes, dict):
             _err_msg = f"`{_class}.form_classes` must be a dict."
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         return self.form_classes
 
-    def get_forms(self) -> dict[str, forms.Form]:
+    def get_forms(self) -> dict[str, forms.BaseForm]:
         """Instantiate the forms with their kwargs."""
-        _forms = {}
+        forms: dict[str, forms.BaseForm] = {}
         for name, form_class in self.get_form_classes().items():
-            _forms[name] = form_class(**self.get_form_kwargs(name))
-        return _forms
+            forms[name] = form_class(**self.get_form_kwargs(name))
+        return forms
 
-    def get_instance(self, name: str) -> Optional[models.Model]:
+    def get_instance(self, name: str) -> models.Model:
         """Connect instances to forms."""
         _class = self.__class__.__name__
-        if self.form_instances is None:
+        if not self.form_instances:
             _err_msg = (
                 f"{_class} is missing a `form_instances` attribute."
                 f"Define `{_class}.form_instances`, or override "
                 f"`{_class}.get_instances`."
             )
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         if not isinstance(self.form_instances, dict):
             _err_msg = f"`{_class}.form_instances` must be a dictionary."
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         try:
             instance = self.form_instances[name]
         except (KeyError, ValueError) as exc:
             _err_msg = f"`{name}` is not an available instance."
-            raise ImproperlyConfigured(_err_msg) from exc
+            raise BracketsConfigurationError(_err_msg) from exc
         else:
             return instance
 
-    def get_initial(self, name: str) -> Optional[dict[str, Any]]:
+    def get_initial(self, name: str) -> dict[str, Any]:  # type: ignore
         """Connect instances to forms."""
-        _class = self.__class__.__name__
         if self.form_initial_values is None:
+            return {}
+
+        _class = self.__class__.__name__
+        if not self.form_initial_values or isinstance(self.form_initial_values, str):
             _err_msg = (
                 f"{_class} is missing a `form_initial_values` attribute."
                 f"Define `{_class}.form_initial_values`, or override "
                 f"`{_class}.get_initial`."
             )
-            raise ImproperlyConfigured(_err_msg)
-
-        if not isinstance(self.form_initial_values, dict):
-            _err_msg = f"`{_class}.form_initial_values` must be a dictionary."
-            raise ImproperlyConfigured(_err_msg)
+            raise BracketsConfigurationError(_err_msg)
 
         try:
-            initial = self.form_initial_values[name]
-        except KeyError:
+            initial: Any = self.form_initial_values[name]
+        except (TypeError, KeyError):
             return {}
         else:
             return initial
 
-    def get_form_kwargs(self, name: str) -> dict[str, Any]:
+    def get_form_kwargs(self, name: str) -> dict[str, Any]:  # type: ignore
         """Add common kwargs to the form."""
-        kwargs = {
+        kwargs: dict[str, Any] = {
             "prefix": name,  # all forms get a prefix
         }
 
@@ -176,16 +177,22 @@ class MultipleFormsMixin:
         """Handle any form being invalid."""
         raise NotImplementedError
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(
+        self, request: HttpRequest, *args: Sequence[Any], **kwargs: Mapping[str, Any]
+    ) -> HttpResponse:
         """Process POST requests: validate and run appropriate handler."""
         if self.validate_forms():
             return self.forms_valid()
         return self.forms_invalid()
 
-    def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def put(
+        self, request: HttpRequest, *args: Sequence[Any], **kwargs: Mapping[str, Any]
+    ) -> HttpResponse:
         """Process PUT requests."""
         raise NotImplementedError
 
-    def patch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def patch(
+        self, request: HttpRequest, *args: Sequence[Any], **kwargs: Mapping[str, Any]
+    ) -> HttpResponse:
         """Process PATCH requests."""
         raise NotImplementedError

@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 from importlib import import_module
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar, Mapping, TypeVar
 
 import pytest
-from django import forms
+from django.forms import Form, ModelForm
 from django.http import HttpResponse
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
@@ -16,21 +16,21 @@ from .project.models import Article
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Type
+    from typing import Any, TypeVar
 
     from django.db import models
 
-    K = dict
+    K = Mapping[str, Any]
 
 
 @pytest.mark.django_db()
 @pytest.fixture()
-def user(django_user_model) -> Callable:
+def user(django_user_model: type[models.Model]) -> Callable[[K], models.Model]:
     """Provide a generic user fixture for tests."""
 
-    def _user(**kwargs: K) -> models.Model:
+    def _user(**kwargs: dict[str, Any]) -> models.Model:
         """Generate a customizable user."""
-        defaults: K = {"username": "test", "password": "Test1234"}
+        defaults: dict[str, str] = {"username": "test", "password": "Test1234"}
         defaults.update(kwargs)
         user: models.Model = django_user_model.objects.create(**defaults)
         return user
@@ -39,7 +39,7 @@ def user(django_user_model) -> Callable:
 
 
 @pytest.fixture(name="mixin_view")
-def mixin_view_factory(request: pytest.FixtureRequest) -> Callable:
+def mixin_view_factory(request: pytest.FixtureRequest) -> Callable[[K], type[View]]:
     """Combine a mixin and View for a test."""
     mixin_request = request.node.get_closest_marker("mixin")
     if not mixin_request:
@@ -48,7 +48,7 @@ def mixin_view_factory(request: pytest.FixtureRequest) -> Callable:
     mixin_name = mixin_request.args[0]
     mixin_class = getattr(mixins, mixin_name)
 
-    def mixin_view(**kwargs: dict) -> Type[View]:
+    def mixin_view(**kwargs: dict[str, HttpResponse]) -> type[View]:
         """Mixed-in view generator."""
         default_functions: dict = {
             "get": lambda s, r, *a, **k: HttpResponse("django-brackets"),
@@ -61,10 +61,12 @@ def mixin_view_factory(request: pytest.FixtureRequest) -> Callable:
 
 
 @pytest.fixture(name="single_object_view")
-def single_object_view_factory(mixin_view: Callable) -> Callable:
+def single_object_view_factory(
+    mixin_view: Callable,
+) -> Callable[[K], type[SingleObjectMixin]]:
     """Fixture for a view with the `SingleObjectMixin`."""
 
-    def _view(**kwargs: K) -> Type[SingleObjectMixin]:
+    def _view(**kwargs: K) -> type[SingleObjectMixin]:
         """Return a mixin view with the `SingleObjectMixin`."""
         return type(
             "SingleObjectView",
@@ -80,7 +82,7 @@ def single_object_view_factory(mixin_view: Callable) -> Callable:
 def multiple_object_view_factory(mixin_view: Callable) -> Callable:
     """Fixture for a view with the `MultipleObjectMixin`."""
 
-    def _view(**kwargs: K) -> Type[MultipleObjectMixin]:
+    def _view(**kwargs: K) -> MultipleObjectMixin[Any]:
         """Return a mixin view with the `MultipleObjectMixin`."""
         return type(
             "MultipleObjectView",
@@ -96,14 +98,14 @@ def multiple_object_view_factory(mixin_view: Callable) -> Callable:
 def form_view_factory(mixin_view: Callable) -> Callable:
     """Fixture for a view with the `FormMixin`."""
 
-    def _view(**kwargs: K) -> Type[BaseFormView]:
+    def _view(**kwargs: K) -> BaseFormView[Any]:
         """Return a view with the `FormMixin` mixin."""
         return type(
             "FormView",
             (mixin_view(), BaseFormView),
             {
+                "fields": "__all__",
                 "http_method_names": ["get", "post"],
-                # "post": lambda s, r, *a, **k: HttpResponse("post"),
             },
             **kwargs,
         )
@@ -115,15 +117,16 @@ def form_view_factory(mixin_view: Callable) -> Callable:
 def model_form_view_factory(mixin_view: Callable) -> Callable:
     """Fixture for a view with the `ModelFormMixin`."""
 
-    def _view(**kwargs: K) -> Type[ModelFormMixin]:
+    def _view(**kwargs: K) -> ModelFormMixin[Any, Any]:
         """Return a view with the `ModelFormMixin` mixin."""
         return type(
             "FormView",
             (mixin_view(), ModelFormMixin),
             {
+                "fields": "__all__",
+                "http_method_names": ["get", "post"],
                 "model": Article,
                 "object": None,
-                "http_method_names": ["get", "post"],
                 "post": lambda s, r, *a, **k: HttpResponse("post"),
             },
             **kwargs,
@@ -136,10 +139,10 @@ def model_form_view_factory(mixin_view: Callable) -> Callable:
 def form_class_factory() -> Callable:
     """Generate a new form class with given kwargs."""
 
-    def _form(**kwargs: K) -> Type[forms.Form]:
+    def _form(**kwargs: K) -> type[Form]:
         """Return a new form class."""
 
-        class MixinForm(forms.Form):
+        class MixinForm(Form):
             class Meta:
                 fields = "__all__"
 
@@ -150,16 +153,19 @@ def form_class_factory() -> Callable:
     return _form
 
 
+T_MF = TypeVar("T_MF", bound=ModelForm)
+
+
 @pytest.fixture(name="model_form_class")
-def model_form_class_factory() -> Callable:
+def model_form_class_factory() -> Callable[[K], T_MF]:
     """Generate a new model form class with given kwargs."""
 
-    def _form(**kwargs: K) -> Type[forms.ModelForm]:
+    def _form(**kwargs: K) -> T_MF:
         """Return a new model form class."""
 
-        class MixinModelForm(forms.ModelForm):
+        class MixinModelForm(ModelForm):
             class Meta:
-                fields = [k for k in kwargs]
+                fields: ClassVar = [k for k in kwargs]
                 model = Article
 
         for k, v in kwargs.items():

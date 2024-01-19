@@ -1,0 +1,15 @@
+name: django-brackets-typing
+on: [pull_request, workflow_dispatch]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install mypy django-stubs[compatible-mypy] djangorestframework-stubs[compatible-mypy]
+      - name: Run mypy
+        env:
+          PYTHONPATH: tests/project/:src/
+        run: mypy --install-types --non-interactive src

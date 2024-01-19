@@ -7,7 +7,7 @@ import pytest
 from django.contrib.auth.models import Group, Permission
 from django.contrib.sessions.backends.db import SessionStore
 from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.timezone import now
 
 
@@ -79,25 +79,22 @@ class TestPassesTestMixin:
 class TestPassOrRedirectMixin:
     """Tests for the `PassOrRedirectMixin`."""
 
-    def test_handle_test_failure_unauthenticated(self, mixin_view, rf, user):
-        """A failed request is redirected."""
-        view = mixin_view(
-            redirect_url="/login",
-        )
+    def test_handle_test_failure_no_redirect(self, mixin_view, rf):
+        """A failed request raises an exception."""
+        view = mixin_view(redirect_url="/login", redirect_unauthenticated_users=False)
         request = rf.get("/secret")
         request.user = None
 
-        response = view(request=request).handle_test_failure()
-        assert response.status_code == 302
-
-    def test_handle_test_failure_no_redirect(self, mixin_view, rf, user):
-        """A failed request raises an exception."""
-        view = mixin_view(redirect_url="/login")
-        request = rf.get("/secret")
-        request.user = user()
-
-        response = view(request=request).handle_test_failure()
+        response = view(request=request).handle_dispatch_test_failure()
         assert isinstance(response, HttpResponseBadRequest)
+
+    def test_handle_test_failure_redirect_users(self, mixin_view, rf):
+        """A failed request raises an exception."""
+        view = mixin_view(redirect_url="/login", redirect_unauthenticated_users=True)
+        request = rf.get("/secret")
+        request.user = None
+        response = view(request=request).handle_dispatch_test_failure()
+        assert isinstance(response, HttpResponseRedirect)
 
 
 @pytest.mark.mixin("SuperuserRequiredMixin")

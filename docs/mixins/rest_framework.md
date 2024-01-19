@@ -26,4 +26,4 @@ class SerialCereal(MultipleSerializersMixin, ViewSet):
     }
 ```
 
-[form_views.MultipleFormView]: mixins/form_views.md#multipleformsmixin
+[form_views.MultipleFormView]: form_views.md#multipleformsmixin

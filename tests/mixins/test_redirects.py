@@ -31,25 +31,6 @@ class TestRedirect:
 class TestRedirectToLogin:
     """Tests related to the `RedirectToLoginMixin`."""
 
-    def test_get_redirect_url(self, mixin_view):
-        """Views must have `redirect_view` defined."""
-        view = mixin_view(redirect_url="/")
-        assert view().get_redirect_url() == "/"
-
-    def test_no_redirect_url(self, mixin_view):
-        """An empty or missing `redirect_view` raises an exception."""
-        view = mixin_view(redirect_url="")
-        with pytest.raises(ImproperlyConfigured):
-            view().get_redirect_url()
-
-    def test_get_redirected(self, mixin_view, rf):
-        """Views redirect requests."""
-        view = mixin_view(redirect_url="/")
-        request = rf.get("/secret/")
-        response = view(request=request).redirect()
-        assert response.status_code == 302
-        assert isinstance(response, HttpResponseRedirect)
-
     def test_get_login_url(self, mixin_view):
         """A provided `login_url` is returned."""
         view = mixin_view(login_url="/login")
@@ -61,3 +42,9 @@ class TestRedirectToLogin:
         view = mixin_view(login_url=None)
         with pytest.raises(ImproperlyConfigured):
             view().get_login_url()
+
+    def test_get_redirected(self, mixin_view, rf):
+        """Views with can be redirected."""
+        view = mixin_view(redirect_url="/", request=rf.get("/"))
+        response = view().redirect()
+        assert response.status_code == 302

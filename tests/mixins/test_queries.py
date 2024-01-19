@@ -102,6 +102,16 @@ class TestOrderableList:
         )
         assert view.get_queryset().query.order_by == ("author",)
 
+    def test_queryset_ordering_with_string(self, multiple_object_view, rf):
+        """No querystring arguments should use the defaults."""
+        request = rf.get("/")
+        view = multiple_object_view()(
+            orderable_field_default="author",
+            orderable_fields="author",
+            request=request,
+        )
+        assert view.get_queryset().query.order_by == ("author",)
+
     def test_queryset_ordering_with_request(self, multiple_object_view, rf):
         """Querystring arguments should override the queryset's ordering."""
         request = rf.get("/?order_dir=desc")
@@ -126,7 +136,7 @@ class TestOrderableList:
         with pytest.raises(ImproperlyConfigured):
             getattr(view, method)()
 
-    @pytest.mark.django_db
+    @pytest.mark.django_db()
     def test_basic_queryset_returned(self, user, multiple_object_view, rf):
         """Test that the correct queryset is returned."""
         request = rf.get("/?order_by=publish_date&order_dir=desc")

@@ -1,13 +1,22 @@
+import contextlib
+
 from django.conf.global_settings import *  # noqa: F401, F403
 from django.contrib.messages import constants as message_constants
 
 # Settings deleted to prevent RemovedInDjango 5.0 warnings
-del CSRF_COOKIE_MASKED
-del DEFAULT_FILE_STORAGE
-del USE_L10N
-del PASSWORD_RESET_TIMEOUT  # pyright: ignore[reportUndefinedVariable]
-del STATICFILES_STORAGE
-del USE_DEPRECATED_PYTZ
+REMOVED_SETTINGS = [
+    "CSRF_COOKIE_MASKED",
+    "DEFAULT_FILE_STORAGE",
+    "DEFAULT_HASHING_ALGORITHM",
+    "FORMS_URLFIELD_ASSUME_HTTPS",
+    "PASSWORD_RESET_TIMEOUT_DAYS",
+    "STATICFILES_STORAGE",
+    "USE_DEPRECATED_PYTZ",
+    "USE_L10N",
+]
+for setting in REMOVED_SETTINGS:
+    with contextlib.suppress(KeyError):
+        del globals()[setting]
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG

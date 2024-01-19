@@ -1,5 +1,7 @@
 # django-brackets
 
+[Official Documentation](https://django-brackets.readthedocs.io)
+
 `django-brackets` is a small collection of mixins for your class-based
 views' needs. Heavily based on [`django-braces`], `brackets` aims to be
 a simpler API and lighter tool set than `braces` was.
