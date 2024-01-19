@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Optional, TypeAlias
 
 from django.http import HttpRequest, HttpResponse
+from django.views.generic import View
 from django.views.decorators.cache import cache_control, never_cache
 
 from brackets.exceptions import BracketsConfigurationError
@@ -17,8 +18,6 @@ __all__ = ["AllVerbsMixin", "HeaderMixin", "CacheControlMixin", "NeverCacheMixin
 
 A: TypeAlias = tuple[Any]
 K: TypeAlias = dict[str, Any]
-_View: TypeAlias = tuple[HttpRequest, tuple[Any], dict[str, Any]]
-
 
 class AllVerbsMixin:
     """Handle all HTTP verbs with a single method."""
@@ -109,9 +108,9 @@ class CacheControlMixin:
         return options
 
     @classmethod
-    def as_view(cls: type["CacheControlMixin"], **initkwargs: dict[str, Any]) -> _View:
+    def as_view(cls: type["CacheControlMixin"], **initkwargs: dict[str, Any]) -> View:
         """Add cache control to the view."""
-        view: Callable[[_View], HttpResponse] = super().as_view(**initkwargs)
+        view: Callable[[View], HttpResponse] = super().as_view(**initkwargs)
         return cache_control(**cls.get_cache_control_options())(view)
 
 
@@ -119,7 +118,7 @@ class NeverCacheMixin:
     """Prevents a view from being cached."""
 
     @classmethod
-    def as_view(cls: type["NeverCacheMixin"], **initkwargs: dict[str, Any]) -> _View:
+    def as_view(cls: type["NeverCacheMixin"], **initkwargs: dict[str, Any]) -> View:
         """Wrap the view with never_cache."""
-        view: Callable[[_View], HttpResponse] = super().as_view(**initkwargs)
+        view: Callable[[View], HttpResponse] = super().as_view(**initkwargs)
         return never_cache(view)
